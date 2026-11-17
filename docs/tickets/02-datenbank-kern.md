@@ -1,6 +1,6 @@
 # Ticket 02: Datenbank-Kern
 
-- **Status:** in Arbeit
+- **Status:** erledigt
 - **Branch:** `feature/datenbank-kern`
 - **Designprinzip:** Ein System für alles
 
@@ -17,7 +17,7 @@ Das drift-Schema für den Kern ist angelegt und getestet. Die Datenbank ist spra
 - [x] `Occurrence.date` ist Pflicht, pro `(taskId, date)` höchstens eine Occurrence; wann sie entsteht (erst beim Starten, Erledigen, Verschieben oder Auslassen), setzt die Aufgabenlogik in Ticket 04 um
 - [x] Fremdschlüssel sind eingeschaltet: Löschen einer Aufgabe entfernt Unterschritte, Vorkommen und Häkchen (Cascade); ein Bereich mit Aufgaben lässt sich nicht löschen (Restrict)
 - [x] `Task.recurrence` und `DayPlan.plannedTaskIds` sind vorerst JSON als Text
-- [ ] Die erzeugten `*.g.dart`-Dateien sind nicht im Git; CI und Doku führen `build_runner` aus (Doku und Workflow stehen, der CI-Lauf auf GitHub fehlt noch)
+- [x] Die erzeugten `*.g.dart`-Dateien sind nicht im Git; CI und Doku führen `build_runner` aus
 - [x] Migrations-Sicherheitsnetz: JSON-Schnappschuss des Schemas v1 unter `drift_schemas/` und ein Test, der prüft, dass die Datenbank dazu passt
 - [x] In-Memory-Datenbank für Tests
 
@@ -44,3 +44,5 @@ Zwei Dinge, die beim Umsetzen auffielen (beide in HANDOFF, Abschnitt „Datenban
 - Der erste Entwurf des Schnappschuss-Tests war wirkungslos (er verglich einen aus dem Schnappschuss erzeugten Stand mit sich selbst); die Gegenprobe hat das aufgedeckt, der Test legt die Datenbank jetzt aus dem Code an.
 
 Nicht per Unit-Test geprüft, wie vereinbart: der Provider `appDatabaseProvider` und die Datei auf dem Gerät. Die App öffnet die Datenbank noch nirgends; das geschieht erstmals mit Ticket 03 (dann auch Gerätetest). Die Debug-App baut und startet mit den neuen Paketen.
+
+Der CI-Lauf auf GitHub ist grün: `build_runner` und die Schnappschuss-Erzeugung laufen auf dem Runner, alle Tests (auch der Schnappschuss-Test unter Linux) und der Debug-Build bestehen.
