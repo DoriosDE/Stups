@@ -1,6 +1,6 @@
 # Ticket 16: Englische Sprache
 
-- **Status:** in Arbeit
+- **Status:** erledigt
 - **Branch:** `feature/englisch`
 - **Designprinzip:** Freundlicher Ton; Barrierearm
 
