@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/l10n/l10n.dart';
-import '../shell/placeholder_page.dart';
+import '../inbox/inbox_view.dart';
 
 class TasksScreen extends StatelessWidget {
   const TasksScreen({super.key});
@@ -9,6 +9,13 @@ class TasksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return PlaceholderPage(title: l10n.tabTasks, hint: l10n.tasksHint);
+    return ListView(
+      padding: const EdgeInsets.all(24),
+      children: [
+        Text(l10n.tabTasks, style: Theme.of(context).textTheme.headlineMedium),
+        const SizedBox(height: 16),
+        const InboxView(),
+      ],
+    );
   }
 }
