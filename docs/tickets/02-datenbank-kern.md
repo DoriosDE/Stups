@@ -33,7 +33,7 @@ Hier kommen `drift_flutter`, `drift_dev`, `build_runner` und `uuid` in die `pubs
 
 ## Umsetzungsstand
 
-Testgetrieben in zwei Seams umgesetzt: Seam 1, das Schema von Grund auf (29 Tests: Standard-Bereiche, Regeln für Bereiche, Standardwerte und UUIDs, Fremdschlüssel mit Cascade und Restrict, Eindeutigkeit, Datumsformat), und Seam 2, das Migrations-Sicherheitsnetz (`test/core/db/schema_snapshot_test.dart` mit dem Schnappschuss `drift_schemas/drift_schema_v1.json`). Die Gegenprobe wurde gemacht: Mit einer zusätzlichen Spalte schlägt der Schnappschuss-Test fehl, ohne sie ist er grün.
+Testgetrieben in zwei Seams umgesetzt: Seam 1, das Schema von Grund auf (28 Tests: Standard-Bereiche, Regeln für Bereiche, Standardwerte und UUIDs, Fremdschlüssel mit Cascade und Restrict, Eindeutigkeit, Datumsformat), und Seam 2, das Migrations-Sicherheitsnetz (`test/core/db/schema_snapshot_test.dart` mit dem Schnappschuss `drift_schemas/drift_schema_v1.json`). Die Gegenprobe wurde gemacht: Mit einer zusätzlichen Spalte schlägt der Schnappschuss-Test fehl, ohne sie ist er grün.
 
 Zwei Dinge, die beim Umsetzen auffielen (beide in HANDOFF, Abschnitt „Datenbank“, festgehalten):
 - `CHECK`-Regeln müssen als Text-Literale in der Tabelle stehen, sonst fehlen sie im Schnappschuss.
