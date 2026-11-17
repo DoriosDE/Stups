@@ -34,7 +34,7 @@ Stand: 17. November 2026. Dieses Dokument fasst zusammen, wie das Konzept entsta
 | State-Management | Riverpod ohne Codegenerierung |
 | IDs und Zeit | UUIDs als Text, UTC-Zeitpunkte, lokale Kalendertage als `yyyy-MM-dd` |
 | Schema | Wiederholungen und Occurrence von Anfang an, Engine erst ab v0.2 |
-| Sprachen | Texte in ARB-Dateien, Deutsch zuerst, Englisch mit v1.0; Systemsprache; Rückfall heute Deutsch, später Englisch; erzeugter Sprachcode nicht im Git |
+| Sprachen | Texte in ARB-Dateien, Deutsch und Englisch (Ticket 16); Systemsprache; Rückfall Englisch; erzeugter Sprachcode nicht im Git |
 | Datenbank | sprachneutral: eingebaute Bereiche nur als Kennung (`household`, `work`, `personal`), Namen aus Sprachdateien (Ticket 15); eingebaute Bereiche nur ein- und ausblendbar |
 | Generierter Code | `*.g.dart` (drift) nicht im Git; `dart run build_runner build` lokal und in der CI |
 | Tests | Logik testgetrieben (Tagesplan, Erinnerungsfenster, Backup-Roundtrip), Widget-Tests für Heute und Fokus |
@@ -102,9 +102,9 @@ Der Test `test/core/db/schema_snapshot_test.dart` schlägt fehl, wenn das Schema
 
 ## Sprachen
 
-Alle Oberflächentexte stehen in Sprachdateien (ARB) unter `lib/l10n/`. Deutsch (`app_de.arb`) ist die Vorlage und heute die einzige Sprache; Englisch folgt mit v1.0.
+Alle Oberflächentexte stehen in Sprachdateien (ARB) unter `lib/l10n/`. Deutsch (`app_de.arb`) ist die Vorlage, Englisch (`app_en.arb`) ist die zweite Sprache.
 
-**Text verwenden:** In einem Widget `context.l10n.tabToday` (aus `lib/core/l10n/l10n.dart`). Fest eingetragene deutsche Texte gibt es nicht; der Test `test/core/l10n/no_hardcoded_texts_test.dart` schlägt an, wenn ein Text aus der Sprachdatei zusätzlich als Literal im Code steht.
+**Text verwenden:** In einem Widget `context.l10n.tabToday` (aus `lib/core/l10n/l10n.dart`). Fest eingetragene Texte gibt es nicht; der Test `test/core/l10n/no_hardcoded_texts_test.dart` schlägt an, wenn ein Text aus der Sprachdatei zusätzlich als Literal im Code steht.
 
 **Neuen Text anlegen:**
 
@@ -112,11 +112,12 @@ Alle Oberflächentexte stehen in Sprachdateien (ARB) unter `lib/l10n/`. Deutsch 
 2. `flutter pub get` erzeugt den Code neu (`lib/l10n/app_localizations*.dart`).
 3. Im Code über `context.l10n.<schlüssel>` verwenden.
 
-**Neue Sprache hinzufügen:** `lib/l10n/app_<code>.arb` mit denselben Schlüsseln anlegen (zum Beispiel `app_en.arb`), dann `fallbackLocale` in `lib/core/l10n/locale_resolution.dart` auf Englisch stellen. Der Rückfall gilt, wenn keine Systemsprache unterstützt wird; heute ist er Deutsch, sobald Englisch da ist, soll er Englisch sein.
+**Neue Sprache hinzufügen:** `lib/l10n/app_<code>.arb` mit genau den Schlüsseln der Vorlage anlegen (so wie `app_en.arb`): nur `@@locale` und die Texte, ohne `description`; Beschreibungen und Platzhalter-Metadaten stehen nur in der Vorlage. Platzhalter wie `{version}` stehen im Text selbst. `flutter pub get` erzeugt den Code. Der Test `test/core/l10n/arb_parity_test.dart` prüft Schlüssel und Platzhalter jeder weiteren Sprache gegen die Vorlage, der Wächter gegen feste Texte prüft alle Sprachen. Der Rückfall gilt, wenn keine Systemsprache unterstützt wird; er ist Englisch (`fallbackLocale` in `lib/core/l10n/locale_resolution.dart`).
 
 **Erzeugter Sprachcode liegt nicht im Git** (`lib/l10n/app_localizations*.dart`, ignoriert). Er entsteht bei `flutter pub get`, auch in der CI. Die CI prüft das Format deshalb vor `pub get`.
 
 **Zu wissen:**
+- Tests laufen mit der Systemsprache Englisch. Ein Test, der deutsche Texte erwartet, setzt `tester.platformDispatcher.localesTestValue = const [Locale('de')]` (siehe `test/widget_test.dart`) oder `locale: Locale('de')` an der `MaterialApp`.
 - Die App folgt der Systemsprache. Eine eigene Sprachwahl in den Einstellungen gibt es noch nicht.
 - Die Delegates stehen in `appLocalizationsDelegates` (`lib/core/l10n/l10n.dart`). Der erzeugte `AppLocalizations.localizationsDelegates` taugt nicht, weil er die veraltete `GlobalMaterialLocalizations` aus `flutter_localizations` nimmt und nicht die aus `material_ui`. Die dadurch erzeugte Meldung `deprecated_member_use` im erzeugten Code unterdrückt der `header` in `l10n.yaml`; die erzeugten Dateien bleiben sonst in der Analyse. Der `header` kann entfallen, sobald der Generator die Klassen aus `material_ui` nimmt.
 - Anzeigenamen eingebauter Bereiche liefert `areaDisplayName(l10n, area)`; ein eigener Name in der Datenbank gewinnt.

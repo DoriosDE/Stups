@@ -95,7 +95,7 @@ Die App ist eine reine Flutter-Client-App ohne Backend. Daten liegen in einer lo
 | Erinnerungen | flutter_local_notifications + timezone | Lokal geplant, kein Server nötig |
 | Backup | JSON-Export und -Import über share_plus und file_picker | Datei bleibt beim Nutzer |
 | Bilder | Eigene gebündelte Illustrationen, optional eigenes Foto über image_picker | Keine fremden Bildrechte |
-| Sprache | flutter_localizations mit ARB-Dateien, Deutsch zuerst | Englisch später ohne Umbau |
+| Sprache | flutter_localizations mit ARB-Dateien, Deutsch und Englisch (Ticket 16) | Weitere Sprachen ohne Umbau |
 | Homescreen-Widget | home_widget (spätere Version) | Heute-Aufgabe ohne App-Start |
 | CI | GitHub Actions: Analyse, Tests, Builds, Release-APK | Reproduzierbare Builds für F-Droid |
 
@@ -307,7 +307,7 @@ Das MVP setzt zuerst den Kern um, der für alle Bereiche gilt: erfassen, zerlege
 1. **v0.1 MVP:** Inbox, Aufgaben mit erstem Mini-Schritt und Unterschritten, Heute mit Energie-Check, Fokusmodus mit Ablenkungs-Parkplatz, Tagesstart-Erinnerung, JSON-Backup, Onboarding mit 3 Bildschirmen, einfache Feier mit Haptik und Konfetti, Taten-Zähler, Begleiter. Android-APK über GitHub Releases, zunächst nur an einen kleinen Testkreis.
 2. **v0.2:** Routinen mit Vorlagen und Erinnerungen, Gewohnheiten, Wochenrückblick. Eine iOS-Testversion über TestFlight folgt erst, wenn über den Apple-Account entschieden ist.
 3. **v0.3:** Haushalt komplett (Raumtage, Raumansicht, Runden, Vorrat, Müllabfuhr), Abgleich von geschätzter und tatsächlicher Dauer, Erfolge, F-Droid-Aufnahme
-4. **v1.0:** Veröffentlichung im Play Store und App Store, Englisch, Barrierefreiheits-Prüfung
+4. **v1.0:** Veröffentlichung im Play Store und App Store, Barrierefreiheits-Prüfung
 5. **Danach:** Termine mit Kalender-Anbindung, Finanzen, Gesundheit, Homescreen-Widgets, ortsbasierte Routinen, optionale Synchronisierung, Body-Doubling-Funktion
 
 ## Offene Fragen

@@ -6,6 +6,9 @@ import 'package:stups/core/theme/app_theme.dart';
 
 void main() {
   Future<void> pumpApp(WidgetTester tester) async {
+    // Die Texte unten sind deutsch; Tests laufen sonst mit Systemsprache Englisch.
+    tester.platformDispatcher.localesTestValue = const [Locale('de')];
+    addTearDown(tester.platformDispatcher.clearLocalesTestValue);
     await tester.pumpWidget(const ProviderScope(child: StupsApp()));
     await tester.pumpAndSettle();
   }

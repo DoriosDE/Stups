@@ -3,20 +3,29 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-/// Seam 3: Sicherung gegen feste Texte im Code.
+/// Sicherung gegen feste Texte im Code.
 ///
-/// Kein Text aus der Sprachdatei darf zusätzlich als Text-Literal im Code
-/// stehen. Grenze: Ein ganz neuer Text, der nie in die Sprachdatei kommt,
-/// fällt hier nicht auf; das fängt das Review. Texte mit Platzhaltern
-/// (`{version}`) werden nicht verglichen.
+/// Kein Text aus einer Sprachdatei (alle Sprachen) darf zusätzlich als
+/// Text-Literal im Code stehen. Grenze: Ein ganz neuer Text, der nie in eine
+/// Sprachdatei kommt, fällt hier nicht auf; das fängt das Review. Texte mit
+/// Platzhaltern (`{version}`) werden nicht verglichen.
 void main() {
-  final arb = jsonDecode(
-    File('lib/l10n/app_de.arb').readAsStringSync(),
-  ) as Map<String, dynamic>;
+  Map<String, dynamic> read(File file) =>
+      jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
 
+  final files = Directory('lib/l10n')
+      .listSync()
+      .whereType<File>()
+      .where((file) => file.path.endsWith('.arb'))
+      .toList();
+  final template = read(File('lib/l10n/app_de.arb'));
+
+  // Alle Texte aller Sprachen: (Datei, Schlüssel) -> Text.
   final messages = {
-    for (final entry in arb.entries)
-      if (!entry.key.startsWith('@')) entry.key: entry.value as String,
+    for (final file in files)
+      for (final entry in read(file).entries)
+        if (!entry.key.startsWith('@'))
+          '${file.uri.pathSegments.last}/${entry.key}': entry.value as String,
   };
 
   test('kein Text aus der Sprachdatei steht fest im Code', () {
@@ -44,10 +53,10 @@ void main() {
     expect(violations, isEmpty, reason: violations.join('\n'));
   });
 
-  test('jeder Schlüssel in der Sprachdatei hat eine Beschreibung', () {
+  test('jeder Schlüssel der Vorlage (Deutsch) hat eine Beschreibung', () {
     final missing = [
-      for (final key in messages.keys)
-        if (((arb['@$key'] as Map<String, dynamic>?)?['description']
+      for (final key in template.keys.where((key) => !key.startsWith('@')))
+        if (((template['@$key'] as Map<String, dynamic>?)?['description']
                     as String? ??
                 '')
             .isEmpty)
