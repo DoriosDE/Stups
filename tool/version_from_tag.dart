@@ -10,6 +10,19 @@ class BuildVersion {
   final String name;
   final int code;
   final BuildFlavor flavor;
+
+  /// App-ID der Variante. Muss zu `android/app/build.gradle.kts` passen; die
+  /// CI prüft das an der gebauten APK.
+  String get appId => switch (flavor) {
+    BuildFlavor.prod => 'de.dorios.stups',
+    BuildFlavor.dev => 'de.dorios.stups.dev',
+  };
+
+  /// Name, den Android unter dem Icon anzeigt.
+  String get label => switch (flavor) {
+    BuildFlavor.prod => 'Stups',
+    BuildFlavor.dev => 'Stups Dev',
+  };
 }
 
 class InvalidTagException implements Exception {

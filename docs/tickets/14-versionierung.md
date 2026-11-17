@@ -33,3 +33,5 @@ Die App-Version kommt allein aus dem Git-Tag. Ein Tag `v0.x.y-dev` auf `develop`
 ## Umsetzungsstand
 
 Lokal geprüft: Beide Flavors bauen, `tool/verify_apk_version.sh` bestätigt App-ID, Name, `versionName` und `versionCode` (`0.1.0-dev`/1000 als Dev, `0.1.0`/1000 als Prod, `0.0.0-lokal`/1 ohne Tag und ohne Flavor). Auf einem Android-17-Gerät läuft die Dev-App neben einer älteren Stups-App, und unter „Mehr“ steht die Version. Offen bis zum Abschluss: erster grüner CI-Lauf, auch mit einem echten Tag (zum Beispiel `v0.0.1-dev`).
+
+Nach dem Review ergänzt (Seam 3): `print_version.dart` ruft die testbare Funktion `run(args, out, err)` auf; Ausgabeformat, leerer Tag und Exit-Code 64 sind getestet. Die Erwartung für App-ID und App-Name kommt jetzt aus Dart (`BuildVersion.appId` und `label`) statt aus einer Shell-Kette in der CI.

@@ -94,6 +94,29 @@ void main() {
     });
   });
 
+  group('App-ID und App-Name', () {
+    test('Release-Tag: de.dorios.stups und „Stups“', () {
+      final version = versionFromTag('v0.1.0');
+
+      expect(version.appId, 'de.dorios.stups');
+      expect(version.label, 'Stups');
+    });
+
+    test('Dev-Tag: de.dorios.stups.dev und „Stups Dev“', () {
+      final version = versionFromTag('v0.1.0-dev');
+
+      expect(version.appId, 'de.dorios.stups.dev');
+      expect(version.label, 'Stups Dev');
+    });
+
+    test('ohne Tag: wie die Dev-App', () {
+      final version = versionFromTag(null);
+
+      expect(version.appId, 'de.dorios.stups.dev');
+      expect(version.label, 'Stups Dev');
+    });
+  });
+
   group('Dev-Tag', () {
     test('v0.1.0-dev behält den Zusatz im Namen und wählt Flavor dev', () {
       final version = versionFromTag('v0.1.0-dev');

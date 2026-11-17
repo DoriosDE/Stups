@@ -54,7 +54,7 @@ Stand: 17. November 2026. Dieses Dokument fasst zusammen, wie das Konzept entsta
 
 ## Versionierung und Varianten
 
-Die Version kommt allein aus dem Git-Tag. `tool/print_version.dart` berechnet daraus Name, Code und Variante.
+Die Version kommt allein aus dem Git-Tag. `tool/print_version.dart` berechnet daraus Name, Code, Variante, App-ID und App-Name. Die Werte für App-ID und App-Name stehen bewusst zweimal im Projekt: in `tool/version_from_tag.dart` (die Erwartung, getestet) und in `android/app/build.gradle.kts` (was wirklich in die APK kommt). Die CI vergleicht beide an der gebauten APK, so fällt jede Abweichung auf.
 
 | Tag | Branch | versionName | versionCode | Variante | App-ID | App-Name |
 | --- | --- | --- | --- | --- | --- | --- |

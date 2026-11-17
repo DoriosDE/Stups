@@ -61,14 +61,11 @@ jobs:
       - name: Version in der APK prüfen
         env:
           FLAVOR: ${{ steps.version.outputs.flavor }}
+          APP_ID: ${{ steps.version.outputs.app_id }}
           NAME: ${{ steps.version.outputs.name }}
           CODE: ${{ steps.version.outputs.code }}
-        run: |
-          if [ "$FLAVOR" = "dev" ]; then
-            app_id=de.dorios.stups.dev; label="Stups Dev"
-          else
-            app_id=de.dorios.stups; label="Stups"
-          fi
-          bash tool/verify_apk_version.sh \
-            "build/app/outputs/flutter-apk/app-${FLAVOR}-debug.apk" \
-            "$app_id" "$NAME" "$CODE" "$label"
+          LABEL: ${{ steps.version.outputs.label }}
+        run: >
+          bash tool/verify_apk_version.sh
+          "build/app/outputs/flutter-apk/app-${FLAVOR}-debug.apk"
+          "$APP_ID" "$NAME" "$CODE" "$LABEL"
