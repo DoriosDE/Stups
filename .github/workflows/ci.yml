@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [develop, master, 'feature/**']
+    tags: ['v*']
   pull_request:
     branches: [develop, master]
 
@@ -26,7 +27,7 @@ jobs:
         run: flutter pub get
 
       - name: Format prüfen
-        run: dart format --output=none --set-exit-if-changed lib test
+        run: dart format --output=none --set-exit-if-changed lib test tool
 
       - name: Analyse
         run: flutter analyze
@@ -34,5 +35,37 @@ jobs:
       - name: Tests
         run: flutter test
 
-      - name: Debug-APK bauen
-        run: flutter build apk --debug
+      # Ohne Tag (Branch-Push, Pull Request) entsteht eine lokale Dev-Version.
+      # Ein ungültiger Tag bricht hier ab: Der Befehl läuft ohne Pipe, sodass
+      # sein Exit-Code den Schritt beendet (bash -e).
+      - name: Version aus dem Tag bestimmen
+        id: version
+        env:
+          TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+        run: |
+          dart run tool/print_version.dart "$TAG" > "$RUNNER_TEMP/version.env"
+          cat "$RUNNER_TEMP/version.env"
+          cat "$RUNNER_TEMP/version.env" >> "$GITHUB_OUTPUT"
+
+      - name: Universal-APK bauen (Debug)
+        env:
+          FLAVOR: ${{ steps.version.outputs.flavor }}
+          NAME: ${{ steps.version.outputs.name }}
+          CODE: ${{ steps.version.outputs.code }}
+        run: >
+          flutter build apk --debug
+          --flavor "$FLAVOR"
+          --build-name="$NAME"
+          --build-number="$CODE"
+
+      - name: Version in der APK prüfen
+        env:
+          FLAVOR: ${{ steps.version.outputs.flavor }}
+          APP_ID: ${{ steps.version.outputs.app_id }}
+          NAME: ${{ steps.version.outputs.name }}
+          CODE: ${{ steps.version.outputs.code }}
+          LABEL: ${{ steps.version.outputs.label }}
+        run: >
+          bash tool/verify_apk_version.sh
+          "build/app/outputs/flutter-apk/app-${FLAVOR}-debug.apk"
+          "$APP_ID" "$NAME" "$CODE" "$LABEL"

@@ -23,3 +23,4 @@ Quelloffene Flutter-App (zunächst Android), die Erwachsenen mit ADHS beim Organ
 - Riverpod ohne Codegenerierung; Code ist feature-first gegliedert (`lib/core/`, `lib/features/<feature>/`).
 - Aufgaben stehen als Tickets in `docs/tickets/` (eine Datei pro Ticket). Jedes Ticket nennt das zugrunde liegende Designprinzip.
 - Branches: Arbeit in `feature/<thema>` von `develop`, Merge mit `--no-ff` nur auf Wunsch. Commit-Nachrichten deutsch, kurz, im Infinitiv, mit Ticket-Verweis am Ende, ohne `Co-Authored-By`-Zeile.
+- Die App-Version kommt allein aus dem Git-Tag (`tool/print_version.dart`, Schema in `docs/HANDOFF.md`, Abschnitt „Versionierung und Varianten“). Lokale Builds laufen als Dev-App (`de.dorios.stups.dev`); die Version in der `pubspec.yaml` ist nur ein Platzhalter.

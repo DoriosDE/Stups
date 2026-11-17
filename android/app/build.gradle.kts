@@ -16,8 +16,22 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
 
+    // Zwei Varianten, die nebeneinander installiert sein können:
+    // prod = die echte App, dev = Entwicklungsstand mit eigenen Daten.
+    flavorDimensions += "env"
+    productFlavors {
+        create("prod") {
+            dimension = "env"
+            manifestPlaceholders["appName"] = "Stups"
+        }
+        create("dev") {
+            dimension = "env"
+            applicationIdSuffix = ".dev"
+            manifestPlaceholders["appName"] = "Stups Dev"
+        }
+    }
+
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "de.dorios.stups"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
