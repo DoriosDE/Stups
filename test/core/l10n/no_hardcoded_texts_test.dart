@@ -34,7 +34,7 @@ void main() {
     for (final file in sources) {
       final code = file.readAsStringSync();
       for (final MapEntry(key: key, value: text) in messages.entries) {
-        if (key == '@@locale' || text.contains('{')) continue;
+        if (text.contains('{')) continue;
         if (code.contains("'$text'") || code.contains('"$text"')) {
           violations.add('${file.path}: "$text" (Schlüssel $key)');
         }
@@ -47,10 +47,10 @@ void main() {
   test('jeder Schlüssel in der Sprachdatei hat eine Beschreibung', () {
     final missing = [
       for (final key in messages.keys)
-        if (key != '@@locale' &&
-            !((arb['@$key'] as Map<String, dynamic>?)?['description']
-                    is String &&
-                (arb['@$key']['description'] as String).isNotEmpty))
+        if (((arb['@$key'] as Map<String, dynamic>?)?['description']
+                    as String? ??
+                '')
+            .isEmpty)
           key,
     ];
 
