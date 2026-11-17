@@ -64,6 +64,28 @@
   "@captureSaved": {
     "description": "Kurze Meldung, nachdem ein Gedanke in die Inbox gespeichert wurde"
   },
+  "tasksTabInbox": "Inbox ({count})",
+  "@tasksTabInbox": {
+    "description": "Umschalter im Tab „Aufgaben“ für die Inbox, mit der Zahl der wartenden Gedanken",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "tasksTabAll": "Alle Aufgaben",
+  "@tasksTabAll": {
+    "description": "Umschalter im Tab „Aufgaben“ für die Liste aller Aufgaben"
+  },
+  "tasksEmpty": "Noch keine Aufgaben. Mit „Neue Aufgabe“ legst du die erste an.",
+  "@tasksEmpty": {
+    "description": "Hinweis in der leeren Aufgabenliste; „Neue Aufgabe“ ist der Knopf darüber"
+  },
+  "tasksAreaAll": "Alle",
+  "@tasksAreaAll": {
+    "description": "Auswahl in der Aufgabenliste, die Aufgaben aus allen Bereichen zeigt"
+  },
   "inboxEmptyTitle": "Inbox leer",
   "@inboxEmptyTitle": {
     "description": "Überschrift der Inbox, wenn kein Gedanke wartet"
@@ -145,6 +167,16 @@
   "taskClear": "Entfernen",
   "@taskClear": {
     "description": "Hinweis am Knopf, der ein gewähltes Datum oder eine Uhrzeit wieder entfernt"
+  },
+  "taskMinutes": "{count} Min.",
+  "@taskMinutes": {
+    "description": "Kurze Dauerangabe in der Aufgabenliste",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "30"
+      }
+    }
   },
   "taskSave": "Speichern",
   "@taskSave": {

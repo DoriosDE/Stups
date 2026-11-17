@@ -8,6 +8,11 @@ final taskRepositoryProvider = Provider<TaskRepository>(
   (ref) => TaskRepository(ref.watch(appDatabaseProvider)),
 );
 
+/// Die Aufgabenliste; mit einer Bereichs-ID nur dieser Bereich, sonst alle.
+final taskListProvider = StreamProvider.family<List<TaskListEntry>, String?>(
+  (ref, areaId) => ref.watch(taskRepositoryProvider).watchTasks(areaId: areaId),
+);
+
 /// Die sichtbaren Bereiche (Haushalt, Arbeit, Persönliches und eigene).
 final areasProvider = StreamProvider<List<Area>>(
   (ref) => ref.watch(taskRepositoryProvider).watchAreas(),
