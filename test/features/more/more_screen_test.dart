@@ -21,6 +21,7 @@ void main() {
           ),
         ],
         child: const MaterialApp(
+          locale: Locale('de'),
           localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(body: MoreScreen()),

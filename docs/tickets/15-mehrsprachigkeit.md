@@ -27,6 +27,7 @@ Alle Oberflächentexte kommen aus Sprachdateien (ARB). Deutsch ist die erste Spr
 - Erzeugter Sprachcode (`lib/l10n/app_localizations*.dart`) liegt nicht im Git, er entsteht bei `flutter pub get`.
 - Nur Deutsch jetzt; die Mechanik belegt ein Test mit einer Test-Übersetzung, die jeden Text durch einen Marker ersetzt.
 - Die App folgt der Systemsprache. Der Rückfall ist in `lib/core/l10n/locale_resolution.dart` festgelegt (heute Deutsch, später Englisch).
+- Seit Ticket 16 gibt es Englisch; der Rückfall ist Englisch.
 - Seitentitel verwenden die Texte der Tab-Namen (`tabToday` und so weiter).
 
 ## Umsetzungsstand

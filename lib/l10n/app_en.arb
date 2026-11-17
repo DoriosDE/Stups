@@ -1,0 +1,19 @@
+{
+  "@@locale": "en",
+  "tabToday": "Today",
+  "tabTasks": "Tasks",
+  "tabRoutines": "Routines",
+  "tabHousehold": "Home",
+  "tabMore": "More",
+  "todayHint": "Your next step will show up here soon.",
+  "tasksHint": "Your tasks and inbox will land here soon.",
+  "routinesHint": "Routines and habits arrive in version 0.2.",
+  "householdHint": "Home arrives in version 0.3.",
+  "moreHint": "Your look back, settings and help are on the way.",
+  "appTitle": "Stups",
+  "captureTooltip": "Clear your head",
+  "moreVersion": "Version {version}",
+  "areaHousehold": "Home",
+  "areaWork": "Work",
+  "areaPersonal": "Personal"
+}

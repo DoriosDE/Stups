@@ -17,3 +17,7 @@
 - [ ] Feier nach Erledigen: Haptik, Konfetti, Taten-Zähler (aus Occurrences berechnet); abschaltbar und verträglich mit „Bewegung reduzieren“
 - [ ] Begleiter (Staubwölkchen) bei Begrüßung und Erfolg, mit frei wählbarem Namen, abschaltbar
 - [ ] Tagesplan-Logik testgetrieben, Widget-Test für Heute
+
+## Hinweise
+
+- Der Claim „Rein ins Tun.“ steht im Prototyp unter dem Namen im Kopfbereich. Wird er eingebaut, kommt er aus den Sprachdateien; die englische Fassung wird dann festgelegt (siehe Ticket 16).

@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stups/core/l10n/locale_resolution.dart';
 
 /// Seam 4: Welche Sprache die App wählt. Sie folgt der Systemsprache; ist sie
-/// nicht dabei, gilt der Rückfall (heute Deutsch, später Englisch).
+/// nicht dabei, gilt der Rückfall (Englisch).
 void main() {
   const de = Locale('de');
   const en = Locale('en');
@@ -47,11 +47,9 @@ void main() {
       expect(resolveLocale(const [], const [de, en], fallback: en), en);
     });
 
-    test(
-      'der Rückfall der App ist heute Deutsch, weil es die einzige Sprache ist',
-      () {
-        expect(resolveLocale(const [Locale('fr')], const [de]), de);
-      },
-    );
+    test('der Rückfall der App ist Englisch', () {
+      expect(resolveLocale(const [Locale('fr')], const [de, en]), en);
+      expect(fallbackLocale, en);
+    });
   });
 }

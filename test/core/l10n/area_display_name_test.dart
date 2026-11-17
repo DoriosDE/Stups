@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stups/core/db/app_database.dart';
 import 'package:stups/core/l10n/area_display_name.dart';
 import 'package:stups/l10n/app_localizations_de.dart';
+import 'package:stups/l10n/app_localizations_en.dart';
 
 import '../../support/marker_localizations.dart';
 
@@ -46,6 +47,20 @@ void main() {
       expect(
         areaDisplayName(de, area(builtInKey: BuiltInArea.personal)),
         'Persönliches',
+      );
+    });
+
+    test('heißen auf Englisch Home, Work und Personal', () {
+      final en = AppLocalizationsEn();
+
+      expect(
+        areaDisplayName(en, area(builtInKey: BuiltInArea.household)),
+        'Home',
+      );
+      expect(areaDisplayName(en, area(builtInKey: BuiltInArea.work)), 'Work');
+      expect(
+        areaDisplayName(en, area(builtInKey: BuiltInArea.personal)),
+        'Personal',
       );
     });
 
