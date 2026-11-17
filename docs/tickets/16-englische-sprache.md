@@ -20,6 +20,7 @@ Die App gibt es auch auf Englisch. Sie folgt der Systemsprache; ist weder Deutsc
 
 ## Hinweise
 
+- Der Tab „Haushalt“ heißt auf Englisch „Household“, weil „Home“ dort meist die Startseite meint; der eingebaute Bereich heißt „Home“.
 - „Stups“ bleibt auch auf Englisch der Name der App und des Begleiters.
 - Der Claim „Rein ins Tun.“ steht noch in keiner Oberfläche und deshalb nicht in den Sprachdateien. Seine englische Fassung wird festgelegt, wenn er eingebaut wird (siehe Ticket 05).
 - Die Begriffe „Stupser“ und „Taten“ stehen noch nicht in den Sprachdateien; die englischen Begriffe legen die Tickets fest, die sie einführen.

@@ -32,7 +32,7 @@ void main() {
   }
 
   const tabsDe = ['Heute', 'Aufgaben', 'Routinen', 'Haushalt', 'Mehr'];
-  const tabsEn = ['Today', 'Tasks', 'Routines', 'Home', 'More'];
+  const tabsEn = ['Today', 'Tasks', 'Routines', 'Household', 'More'];
 
   void expectTabs(List<String> labels) {
     for (final label in labels) {
