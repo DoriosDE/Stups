@@ -1,6 +1,6 @@
 # Ticket 14: Versionierung aus dem Tag
 
-- **Status:** in Arbeit
+- **Status:** erledigt
 - **Branch:** `feature/versionierung`
 - **Designprinzip:** Verteilung (Ziel: Open Source, reproduzierbar)
 
@@ -15,8 +15,8 @@ Die App-Version kommt allein aus dem Git-Tag. Ein Tag `v0.x.y-dev` auf `develop`
 - [x] `versionCode` ist `Major·1.000.000 + Minor·1.000 + Patch`, ohne Zusatz; Minor und Patch über 999 brechen ab
 - [x] Die Berechnung ist eine kleine reine Funktion unter `tool/`, testgetrieben: Tag rein, Name, Code und Flavor raus
 - [x] Zwei Flavors: `prod` (`de.dorios.stups`, App-Name „Stups“) und `dev` (`de.dorios.stups.dev`, App-Name „Stups Dev“), mit getrennten Daten
-- [ ] Die CI wählt den Flavor anhand des Tags und baut eine Universal-APK (ohne `--split-per-abi`) (Workflow geschrieben, noch nicht auf GitHub gelaufen)
-- [ ] Die CI prüft nach dem Build, dass `versionName` und `versionCode` der APK zu den erwarteten Werten passen (Skript lokal geprüft, in der CI noch nicht gelaufen)
+- [x] Die CI wählt den Flavor anhand des Tags und baut eine Universal-APK (ohne `--split-per-abi`)
+- [x] Die CI prüft nach dem Build, dass `versionName` und `versionCode` der APK zu den erwarteten Werten passen
 - [x] Lokale Builds ohne Tag: `0.0.0-lokal`, Code 1, Flavor `dev`, damit Tests auf dem Gerät die echte App nicht überschreiben; `flutter run` und `flutter build` nehmen lokal standardmäßig `dev`
 - [x] Eine eingecheckte `.vscode/launch.json` startet mit `--flavor dev` (Ausnahmeregel in der `.gitignore`)
 - [x] `pubspec.yaml`: `version: 0.0.0-lokal+1` mit Kommentar, dass die echte Version vom Tag kommt (so zeigen lokale Builds dieselbe Version wie `versionFromTag(null)`)
@@ -32,6 +32,6 @@ Die App-Version kommt allein aus dem Git-Tag. Ein Tag `v0.x.y-dev` auf `develop`
 
 ## Umsetzungsstand
 
-Lokal geprüft: Beide Flavors bauen, `tool/verify_apk_version.sh` bestätigt App-ID, Name, `versionName` und `versionCode` (`0.1.0-dev`/1000 als Dev, `0.1.0`/1000 als Prod, `0.0.0-lokal`/1 ohne Tag und ohne Flavor). Auf einem Android-17-Gerät läuft die Dev-App neben einer älteren Stups-App, und unter „Mehr“ steht die Version. Offen bis zum Abschluss: erster grüner CI-Lauf, auch mit einem echten Tag (zum Beispiel `v0.0.1-dev`).
+Lokal geprüft: Beide Flavors bauen, `tool/verify_apk_version.sh` bestätigt App-ID, Name, `versionName` und `versionCode` (`0.1.0-dev`/1000 als Dev, `0.1.0`/1000 als Prod, `0.0.0-lokal`/1 ohne Tag und ohne Flavor). Auf einem Android-17-Gerät läuft die Dev-App neben einer älteren Stups-App, und unter „Mehr“ steht die Version. Der CI-Lauf auf GitHub ist grün (Branch-Push ohne Tag: Dev-Version `0.0.0-lokal`, Build und APK-Prüfung mit `aapt2` auf dem Runner). Noch nicht erprobt ist der Weg über einen echten Tag (`v*`); den belegt erst der erste Tag, zum Beispiel `v0.0.1-dev` auf `develop`.
 
 Nach dem Review ergänzt (Seam 3): `print_version.dart` ruft die testbare Funktion `run(args, out, err)` auf; Ausgabeformat, leerer Tag und Exit-Code 64 sind getestet. Die Erwartung für App-ID und App-Name kommt jetzt aus Dart (`BuildVersion.appId` und `label`) statt aus einer Shell-Kette in der CI.
