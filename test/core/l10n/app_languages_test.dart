@@ -5,7 +5,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stups/app.dart';
 import 'package:stups/core/app_info/app_info_provider.dart';
 
-/// Seam 2 und 3: Die App folgt der Systemsprache und zeigt echte Texte in
+/// Die App folgt der Systemsprache und zeigt echte Texte in
 /// Deutsch oder Englisch; ohne unterstützte Sprache gilt Englisch. Die
 /// erwarteten Texte stehen hier als Literale, unabhängig von den Sprachdateien.
 /// Ob der Wortlaut gut ist, prüft das Review.
@@ -44,7 +44,7 @@ void main() {
     }
   }
 
-  group('Seam 2: die App folgt der Systemsprache', () {
+  group('die App folgt der Systemsprache', () {
     testWidgets('Englisch zeigt englische Texte', (tester) async {
       await pumpApp(tester, const [Locale('en', 'US')]);
 
@@ -84,7 +84,7 @@ void main() {
     });
   });
 
-  group('Seam 3: Rückfall', () {
+  group('Rückfall', () {
     testWidgets('eine nicht unterstützte Sprache ergibt Englisch', (
       tester,
     ) async {

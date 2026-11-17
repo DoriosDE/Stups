@@ -6,7 +6,7 @@ import 'package:stups/l10n/app_localizations_en.dart';
 
 import '../../support/marker_localizations.dart';
 
-/// Seam 2: Der Anzeigename eines Bereichs. Eingebaute Bereiche tragen keinen
+/// Der Anzeigename eines Bereichs. Eingebaute Bereiche tragen keinen
 /// Text in der Datenbank; ihr Name kommt aus den Sprachdateien.
 void main() {
   Area area({String? builtInKey, String? name}) => Area(

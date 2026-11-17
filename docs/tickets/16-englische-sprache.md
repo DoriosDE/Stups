@@ -28,6 +28,6 @@ Die App gibt es auch auf Englisch. Sie folgt der Systemsprache; ist weder Deutsc
 
 ## Umsetzungsstand
 
-Testgetrieben in fünf Seams: (1) gleiche Schlüssel und Platzhalter in allen Sprachdateien (`arb_parity_test.dart`; Platzhalter werden aus dem Text gelesen, Metadaten und Beschreibungen stehen nur in der Vorlage), (2) die App folgt der Systemsprache (`app_languages_test.dart`, mit echten Texten als Literalen), (3) Rückfall Englisch, (4) englische Bereichsnamen, (5) Wächter gegen feste Texte über alle Sprachen. Rot war zuerst nur der Rückfall und der Paritätstest; die Mechanik aus Ticket 15 trug den Rest. Gegenproben: ein fehlender Platzhalter im englischen Text und ein fester Text im Code schlagen an.
+Testgetrieben in fünf Seams, benannt nach ihren Testdateien: `arb_parity_test.dart` (gleiche Schlüssel und Platzhalter in allen Sprachdateien; Platzhalter werden aus dem Text gelesen, Metadaten und Beschreibungen stehen nur in der Vorlage), `app_languages_test.dart` (die App folgt der Systemsprache, mit echten Texten als Literalen, und der Rückfall ist Englisch), `locale_resolution_test.dart` (Sprachwahl und Rückfall), `area_display_name_test.dart` (englische Bereichsnamen) und `no_hardcoded_texts_test.dart` (Wächter gegen feste Texte über alle Sprachen). Rot war zuerst nur der Rückfall und der Paritätstest; die Mechanik aus Ticket 15 trug den Rest. Gegenproben: ein fehlender Platzhalter im englischen Text und ein fester Text im Code schlagen an.
 
 Nicht getestet: der Wortlaut der englischen Texte (Review).

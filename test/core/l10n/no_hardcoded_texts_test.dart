@@ -3,12 +3,12 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-/// Seam 3: Sicherung gegen feste Texte im Code.
+/// Sicherung gegen feste Texte im Code.
 ///
 /// Kein Text aus einer Sprachdatei (alle Sprachen) darf zusätzlich als
-/// Text-Literal im Code stehen. Grenze: Ein ganz neuer Text, der nie in die Sprachdatei kommt,
-/// fällt hier nicht auf; das fängt das Review. Texte mit Platzhaltern
-/// (`{version}`) werden nicht verglichen.
+/// Text-Literal im Code stehen. Grenze: Ein ganz neuer Text, der nie in eine
+/// Sprachdatei kommt, fällt hier nicht auf; das fängt das Review. Texte mit
+/// Platzhaltern (`{version}`) werden nicht verglichen.
 void main() {
   Map<String, dynamic> read(File file) =>
       jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
@@ -18,7 +18,7 @@ void main() {
       .whereType<File>()
       .where((file) => file.path.endsWith('.arb'))
       .toList();
-  final arb = read(File('lib/l10n/app_de.arb'));
+  final template = read(File('lib/l10n/app_de.arb'));
 
   // Alle Texte aller Sprachen: (Datei, Schlüssel) -> Text.
   final messages = {
@@ -55,8 +55,8 @@ void main() {
 
   test('jeder Schlüssel der Vorlage (Deutsch) hat eine Beschreibung', () {
     final missing = [
-      for (final key in arb.keys.where((key) => !key.startsWith('@')))
-        if (((arb['@$key'] as Map<String, dynamic>?)?['description']
+      for (final key in template.keys.where((key) => !key.startsWith('@')))
+        if (((template['@$key'] as Map<String, dynamic>?)?['description']
                     as String? ??
                 '')
             .isEmpty)

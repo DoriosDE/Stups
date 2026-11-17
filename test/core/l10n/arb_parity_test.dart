@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-/// Seam 1: Alle Sprachdateien haben dieselben Schlüssel und Platzhalter wie
+/// Alle Sprachdateien haben dieselben Schlüssel und Platzhalter wie
 /// die Vorlage (Deutsch). Das fängt vergessene oder überzählige Texte; den
 /// Wortlaut prüft das Review.
 void main() {

@@ -95,7 +95,6 @@ Der erste Befehl erzeugt `*.g.dart`, der zweite den Test-Helfer für den Schema-
 Der Test `test/core/db/schema_snapshot_test.dart` schlägt fehl, wenn das Schema im Code vom Schnappschuss abweicht. Ändert man also eine Tabelle und vergisst Version oder Schnappschuss, fällt das sofort auf. Er vergleicht immer mit dem Schnappschuss der aktuellen `schemaVersion`, braucht also nach Schritt 1 und 2 keine Anpassung.
 
 **Zu wissen:**
-- Tests laufen mit der Systemsprache Englisch. Ein Test, der deutsche Texte erwartet, setzt `tester.platformDispatcher.localesTestValue = const [Locale('de')]` (siehe `test/widget_test.dart`) oder `locale: Locale('de')` an der `MaterialApp`.
 - `CHECK`-Regeln in `customConstraints` müssen als **Text-Literale** in der Tabelle stehen, nicht über eine Hilfsfunktion. Der Schnappschuss-Generator liest nur Literale; eine Regel, die er nicht sieht, fehlt im Schnappschuss.
 - Eine Spalte `text` heißt in Dart `content` (`text().named('text')`), weil `text` in drift die Methode zum Anlegen von Spalten ist.
 - Zeitpunkte werden als absolute Zeit (UTC) gespeichert, Kalendertage als lokaler Text `yyyy-MM-dd`; das Format erzwingt eine `CHECK`-Regel.
@@ -105,7 +104,7 @@ Der Test `test/core/db/schema_snapshot_test.dart` schlägt fehl, wenn das Schema
 
 Alle Oberflächentexte stehen in Sprachdateien (ARB) unter `lib/l10n/`. Deutsch (`app_de.arb`) ist die Vorlage, Englisch (`app_en.arb`) ist die zweite Sprache.
 
-**Text verwenden:** In einem Widget `context.l10n.tabToday` (aus `lib/core/l10n/l10n.dart`). Fest eingetragene deutsche Texte gibt es nicht; der Test `test/core/l10n/no_hardcoded_texts_test.dart` schlägt an, wenn ein Text aus der Sprachdatei zusätzlich als Literal im Code steht.
+**Text verwenden:** In einem Widget `context.l10n.tabToday` (aus `lib/core/l10n/l10n.dart`). Fest eingetragene Texte gibt es nicht; der Test `test/core/l10n/no_hardcoded_texts_test.dart` schlägt an, wenn ein Text aus der Sprachdatei zusätzlich als Literal im Code steht.
 
 **Neuen Text anlegen:**
 
@@ -118,6 +117,7 @@ Alle Oberflächentexte stehen in Sprachdateien (ARB) unter `lib/l10n/`. Deutsch 
 **Erzeugter Sprachcode liegt nicht im Git** (`lib/l10n/app_localizations*.dart`, ignoriert). Er entsteht bei `flutter pub get`, auch in der CI. Die CI prüft das Format deshalb vor `pub get`.
 
 **Zu wissen:**
+- Tests laufen mit der Systemsprache Englisch. Ein Test, der deutsche Texte erwartet, setzt `tester.platformDispatcher.localesTestValue = const [Locale('de')]` (siehe `test/widget_test.dart`) oder `locale: Locale('de')` an der `MaterialApp`.
 - Die App folgt der Systemsprache. Eine eigene Sprachwahl in den Einstellungen gibt es noch nicht.
 - Die Delegates stehen in `appLocalizationsDelegates` (`lib/core/l10n/l10n.dart`). Der erzeugte `AppLocalizations.localizationsDelegates` taugt nicht, weil er die veraltete `GlobalMaterialLocalizations` aus `flutter_localizations` nimmt und nicht die aus `material_ui`. Die dadurch erzeugte Meldung `deprecated_member_use` im erzeugten Code unterdrückt der `header` in `l10n.yaml`; die erzeugten Dateien bleiben sonst in der Analyse. Der `header` kann entfallen, sobald der Generator die Klassen aus `material_ui` nimmt.
 - Anzeigenamen eingebauter Bereiche liefert `areaDisplayName(l10n, area)`; ein eigener Name in der Datenbank gewinnt.

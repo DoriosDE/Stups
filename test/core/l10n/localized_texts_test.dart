@@ -10,7 +10,7 @@ import 'package:stups/features/shell/placeholder_page.dart';
 
 import '../../support/marker_localizations.dart';
 
-/// Seam 1: Alle Oberflächentexte kommen aus den Sprachdateien. Die
+/// Alle Oberflächentexte kommen aus den Sprachdateien. Die
 /// Test-Übersetzung ersetzt jeden Text durch einen Marker; was keinen Marker
 /// zeigt, steht fest im Code.
 void main() {
