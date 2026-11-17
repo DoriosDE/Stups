@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../shell/placeholder_page.dart';
 
 class TasksScreen extends StatelessWidget {
@@ -7,9 +8,7 @@ class TasksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PlaceholderPage(
-      title: 'Aufgaben',
-      hint: 'Hier landen bald deine Aufgaben und die Inbox.',
-    );
+    final l10n = context.l10n;
+    return PlaceholderPage(title: l10n.tabTasks, hint: l10n.tasksHint);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../shell/placeholder_page.dart';
 
 class TodayScreen extends StatelessWidget {
@@ -7,9 +8,7 @@ class TodayScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PlaceholderPage(
-      title: 'Heute',
-      hint: 'Hier steht bald dein nächster Schritt.',
-    );
+    final l10n = context.l10n;
+    return PlaceholderPage(title: l10n.tabToday, hint: l10n.todayHint);
   }
 }

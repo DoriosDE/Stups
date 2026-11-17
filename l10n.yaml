@@ -1,0 +1,10 @@
+# Sprachdateien (ARB) und erzeugter Code, siehe docs/HANDOFF.md, Abschnitt „Sprachen“.
+arb-dir: lib/l10n
+template-arb-file: app_de.arb
+output-localization-file: app_localizations.dart
+nullable-getter: false
+# Der Generator nennt darin die veralteten Klassen aus flutter_localizations
+# (AppLocalizations.localizationsDelegates). Wir nutzen sie nicht (siehe
+# lib/core/l10n/l10n.dart); die Meldung wird nur im erzeugten Code unterdrückt,
+# der Rest bleibt in der Analyse.
+header: "// ignore_for_file: deprecated_member_use"

@@ -23,5 +23,6 @@ Quelloffene Flutter-App (zunächst Android), die Erwachsenen mit ADHS beim Organ
 - Riverpod ohne Codegenerierung; Code ist feature-first gegliedert (`lib/core/`, `lib/features/<feature>/`).
 - Aufgaben stehen als Tickets in `docs/tickets/` (eine Datei pro Ticket). Jedes Ticket nennt das zugrunde liegende Designprinzip.
 - Branches: Arbeit in `feature/<thema>` von `develop`, Merge mit `--no-ff` nur auf Wunsch. Commit-Nachrichten deutsch, kurz, im Infinitiv, mit Ticket-Verweis am Ende, ohne `Co-Authored-By`-Zeile.
+- Oberflächentexte stehen nie fest im Code, sondern in `lib/l10n/app_de.arb` (Zugriff `context.l10n.<schlüssel>`); Details und der Ablauf für neue Texte und Sprachen in `docs/HANDOFF.md`, Abschnitt „Sprachen“. Der erzeugte Sprachcode (`lib/l10n/app_localizations*.dart`) liegt nicht im Git und entsteht bei `flutter pub get`.
 - Der erzeugte drift-Code (`*.g.dart`, `test/generated/`) liegt nicht im Git. Nach dem Klonen und nach Tabellenänderungen die Befehle aus `docs/HANDOFF.md`, Abschnitt „Datenbank“, ausführen; dort steht auch, wie man das Schema ändert.
 - Die App-Version kommt allein aus dem Git-Tag (`tool/print_version.dart`, Schema in `docs/HANDOFF.md`, Abschnitt „Versionierung und Varianten“). Lokale Builds laufen als Dev-App (`de.dorios.stups.dev`); die Version in der `pubspec.yaml` ist nur ein Platzhalter.
