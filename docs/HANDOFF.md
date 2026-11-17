@@ -65,9 +65,9 @@ Die Version kommt allein aus dem Git-Tag. `tool/print_version.dart` berechnet da
 - **versionCode:** `Major·1.000.000 + Minor·1.000 + Patch`, ohne Zusatz. Minor und Patch gehen bis 999, Major bis 2099 (Android erlaubt höchstens 2.100.000.000).
 - **Tag-Format:** `v<Major>.<Minor>.<Patch>` mit optionalem `-dev`, ohne führende Nullen. Alles andere bricht den Build ab.
 - **Dev und Prod nebeneinander:** Die Dev-App hat eine eigene App-ID und eigene Daten. Deshalb ist es unkritisch, dass Dev- und Release-Tag denselben Code haben können.
-- **Universal-APK:** Wir bauen ohne `--split-per-abi`, weil Flutter dort `1000 × ABI` zum Code addiert.
+- **Universal-APK:** Wir bauen ohne `--split-per-abi`, weil Flutter dort laut Kommentar im Projekt-Template `1000 × ABI` zum Code addiert (an einem Split-Build noch nicht geprüft).
 - **Lokal:** `flutter run` und `flutter build` nehmen ohne Angabe die Dev-App (`default-flavor` in der `pubspec.yaml`). In VS Code startet `.vscode/launch.json` mit `--flavor dev`.
-- **CI:** Bei einem Tag `v*` übergibt die CI `--flavor`, `--build-name` und `--build-number` und prüft danach mit `tool/verify_apk_version.sh`, ob die APK zu den erwarteten Werten passt.
+- **CI:** Bei jedem Lauf bestimmt die CI die Version mit `tool/print_version.dart` (mit Tag `v*` aus dem Tag, sonst `0.0.0-lokal`), übergibt `--flavor`, `--build-name` und `--build-number` und prüft danach mit `tool/verify_apk_version.sh`, ob die APK zu den erwarteten Werten passt. Ein ungültiger Tag bricht den Lauf ab.
 - **F-Droid:** Die Build-Anleitung dort muss dieselben Werte aus dem Tag übergeben. Das ist noch zu prüfen.
 
 ## Designregeln aus den Prototyp-Runden

@@ -27,8 +27,12 @@ if [ -z "$aapt2" ]; then
 fi
 
 badging=$("$aapt2" dump badging "$apk")
-package_line=$(printf '%s\n' "$badging" | grep -m1 '^package:')
-label_line=$(printf '%s\n' "$badging" | grep -m1 '^application-label:')
+package_line=$(grep -m1 '^package:' <<<"$badging" || true)
+label_line=$(grep -m1 '^application-label:' <<<"$badging" || true)
+if [ -z "$package_line" ] || [ -z "$label_line" ]; then
+  echo "Die Ausgabe von aapt2 enthält keine package- oder application-label-Zeile für $apk." >&2
+  exit 2
+fi
 
 actual_id=$(printf '%s' "$package_line" | sed -n "s/.* name='\([^']*\)'.*/\1/p")
 actual_code=$(printf '%s' "$package_line" | sed -n "s/.* versionCode='\([^']*\)'.*/\1/p")

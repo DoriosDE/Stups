@@ -36,19 +36,27 @@ jobs:
         run: flutter test
 
       # Ohne Tag (Branch-Push, Pull Request) entsteht eine lokale Dev-Version.
-      # Ein ungültiger Tag bricht hier ab.
+      # Ein ungültiger Tag bricht hier ab: Der Befehl läuft ohne Pipe, sodass
+      # sein Exit-Code den Schritt beendet (bash -e).
       - name: Version aus dem Tag bestimmen
         id: version
         env:
           TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
-        run: dart run tool/print_version.dart "$TAG" | tee -a "$GITHUB_OUTPUT"
+        run: |
+          dart run tool/print_version.dart "$TAG" > "$RUNNER_TEMP/version.env"
+          cat "$RUNNER_TEMP/version.env"
+          cat "$RUNNER_TEMP/version.env" >> "$GITHUB_OUTPUT"
 
       - name: Universal-APK bauen (Debug)
+        env:
+          FLAVOR: ${{ steps.version.outputs.flavor }}
+          NAME: ${{ steps.version.outputs.name }}
+          CODE: ${{ steps.version.outputs.code }}
         run: >
           flutter build apk --debug
-          --flavor ${{ steps.version.outputs.flavor }}
-          --build-name=${{ steps.version.outputs.name }}
-          --build-number=${{ steps.version.outputs.code }}
+          --flavor "$FLAVOR"
+          --build-name="$NAME"
+          --build-number="$CODE"
 
       - name: Version in der APK prüfen
         env:

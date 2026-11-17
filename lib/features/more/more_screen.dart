@@ -21,6 +21,8 @@ class MoreScreen extends ConsumerWidget {
         ),
         if (version != null)
           Padding(
+            // Unten Platz für den schwebenden Plus-Button, damit er den Text
+            // nicht verdeckt.
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 96),
             child: Text(
               'Version $version',

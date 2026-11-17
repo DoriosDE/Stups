@@ -27,6 +27,8 @@ class InvalidTagException implements Exception {
 /// höchstens 2.100.000.000, daher ist Major bis 2099 möglich.
 const _maxMinorOrPatch = 999;
 const _maxMajor = 2099;
+const _majorWeight = 1000000;
+const _minorWeight = 1000;
 
 final _tagPattern = RegExp(
   r'^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-dev)?$',
@@ -54,7 +56,7 @@ BuildVersion versionFromTag(String? tag) {
   }
   return BuildVersion(
     name: tag.substring(1),
-    code: major * 1000000 + minor * 1000 + patch,
+    code: major * _majorWeight + minor * _minorWeight + patch,
     flavor: match[4] == null ? BuildFlavor.prod : BuildFlavor.dev,
   );
 }
