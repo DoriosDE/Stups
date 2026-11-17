@@ -118,7 +118,7 @@ Alle Oberflächentexte stehen in Sprachdateien (ARB) unter `lib/l10n/`. Deutsch 
 
 **Zu wissen:**
 - Die App folgt der Systemsprache. Eine eigene Sprachwahl in den Einstellungen gibt es noch nicht.
-- Die Delegates stehen in `appLocalizationsDelegates` (`lib/core/l10n/l10n.dart`). Der erzeugte `AppLocalizations.localizationsDelegates` taugt nicht, weil er die veraltete `GlobalMaterialLocalizations` aus `flutter_localizations` nimmt und nicht die aus `material_ui`.
+- Die Delegates stehen in `appLocalizationsDelegates` (`lib/core/l10n/l10n.dart`). Der erzeugte `AppLocalizations.localizationsDelegates` taugt nicht, weil er die veraltete `GlobalMaterialLocalizations` aus `flutter_localizations` nimmt und nicht die aus `material_ui`. Die dadurch erzeugte Meldung `deprecated_member_use` im erzeugten Code unterdrückt der `header` in `l10n.yaml`; die erzeugten Dateien bleiben sonst in der Analyse. Der `header` kann entfallen, sobald der Generator die Klassen aus `material_ui` nimmt.
 - Anzeigenamen eingebauter Bereiche liefert `areaDisplayName(l10n, area)`; ein eigener Name in der Datenbank gewinnt.
 - In Tests liefert `MarkerLocalizations` (`test/support/marker_localizations.dart`) statt der Texte Marker wie `⟦tabToday⟧`. So zeigt ein Test, dass ein Text aus den Sprachdateien kommt, unabhängig vom Wortlaut.
 
