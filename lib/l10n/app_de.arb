@@ -48,6 +48,26 @@
   "@captureTooltip": {
     "description": "Hinweis am schwebenden Plus-Button zur Schnellerfassung"
   },
+  "captureTitle": "Kopf frei machen",
+  "@captureTitle": {
+    "description": "Überschrift des Eingabeblatts, das der Plus-Button öffnet"
+  },
+  "captureHint": "Was geht dir durch den Kopf? Es landet in der Inbox, sortieren kannst du später.",
+  "@captureHint": {
+    "description": "Erklärung unter der Überschrift des Eingabeblatts"
+  },
+  "captureFieldHint": "z. B. Mama zurückrufen",
+  "@captureFieldHint": {
+    "description": "Beispieltext im leeren Eingabefeld der Schnellerfassung"
+  },
+  "captureDone": "Fertig",
+  "@captureDone": {
+    "description": "Knopf im Eingabeblatt, der den Gedanken in die Inbox speichert"
+  },
+  "captureSaved": "In der Inbox gespeichert.",
+  "@captureSaved": {
+    "description": "Kurze Meldung, nachdem ein Gedanke in die Inbox gespeichert wurde"
+  },
   "moreVersion": "Version {version}",
   "@moreVersion": {
     "description": "Versionsanzeige unter „Mehr“",

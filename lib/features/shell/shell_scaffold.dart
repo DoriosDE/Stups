@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/l10n/l10n.dart';
+import '../inbox/capture_sheet.dart';
 
 /// Rahmen mit den fünf Tabs und dem schwebenden Plus-Button „Kopf frei machen“.
 class ShellScaffold extends StatelessWidget {
@@ -51,8 +52,7 @@ class ShellScaffold extends StatelessWidget {
       body: SafeArea(child: navigationShell),
       floatingActionButton: FloatingActionButton(
         tooltip: l10n.captureTooltip,
-        // Die Schnellerfassung folgt mit Ticket 03.
-        onPressed: () {},
+        onPressed: () => showCaptureSheet(context),
         child: const Icon(Icons.add, size: 30),
       ),
       bottomNavigationBar: NavigationBar(
