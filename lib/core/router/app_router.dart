@@ -5,6 +5,7 @@ import '../../features/routines/routines_screen.dart';
 import '../../features/household/household_screen.dart';
 import '../../features/more/more_screen.dart';
 import '../../features/shell/shell_scaffold.dart';
+import '../../features/tasks/task_form_screen.dart';
 import '../../features/tasks/tasks_screen.dart';
 import '../../features/today/today_screen.dart';
 
@@ -14,6 +15,7 @@ abstract final class AppRoutes {
   static const routines = '/routinen';
   static const household = '/haushalt';
   static const more = '/mehr';
+  static const newTask = '/aufgaben/neu';
 }
 
 GoRouter createRouter({String initialLocation = AppRoutes.today}) {
@@ -30,6 +32,12 @@ GoRouter createRouter({String initialLocation = AppRoutes.today}) {
           _branch(AppRoutes.household, const HouseholdScreen()),
           _branch(AppRoutes.more, const MoreScreen()),
         ],
+      ),
+      // Formulare und Detailansichten decken den Rahmen mit Tabs ab: eine Sache
+      // pro Bildschirm.
+      GoRoute(
+        path: AppRoutes.newTask,
+        builder: (context, state) => const TaskFormScreen(),
       ),
     ],
   );

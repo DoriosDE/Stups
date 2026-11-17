@@ -94,6 +94,62 @@
       }
     }
   },
+  "taskNew": "Neue Aufgabe",
+  "@taskNew": {
+    "description": "Knopf im Tab „Aufgaben“ und Überschrift des Formulars für eine neue Aufgabe"
+  },
+  "taskTitleLabel": "Was willst du erledigen?",
+  "@taskTitleLabel": {
+    "description": "Beschriftung des Titelfelds im Aufgabenformular"
+  },
+  "taskFirstStepLabel": "Was ist der allererste Mini-Schritt?",
+  "@taskFirstStepLabel": {
+    "description": "Beschriftung des Felds für den ersten Mini-Schritt; der Schritt soll so klein sein, dass der Einstieg leichtfällt"
+  },
+  "taskMoreDetails": "Mehr Details",
+  "@taskMoreDetails": {
+    "description": "Eingeklappter Bereich im Aufgabenformular mit den optionalen Feldern"
+  },
+  "taskEstimateLabel": "Geschätzte Dauer in Minuten",
+  "@taskEstimateLabel": {
+    "description": "Beschriftung des Felds für die geschätzte Dauer einer Aufgabe"
+  },
+  "taskPriorityLabel": "Priorität",
+  "@taskPriorityLabel": {
+    "description": "Beschriftung der Auswahl A, B oder C für die Priorität einer Aufgabe"
+  },
+  "taskAreaLabel": "Bereich",
+  "@taskAreaLabel": {
+    "description": "Beschriftung der Auswahl des Bereichs einer Aufgabe"
+  },
+  "taskStepLabel": "Weiterer Schritt",
+  "@taskStepLabel": {
+    "description": "Beschriftung eines Felds für einen weiteren Unterschritt nach dem ersten Mini-Schritt"
+  },
+  "taskAddStep": "Schritt hinzufügen",
+  "@taskAddStep": {
+    "description": "Knopf im Aufgabenformular, der ein weiteres Feld für einen Unterschritt öffnet"
+  },
+  "taskDueLabel": "Fällig am",
+  "@taskDueLabel": {
+    "description": "Beschriftung der Auswahl des Fälligkeitsdatums einer Aufgabe"
+  },
+  "taskReminderLabel": "Erinnerung",
+  "@taskReminderLabel": {
+    "description": "Beschriftung der Auswahl von Tag und Uhrzeit für den Stupser einer Aufgabe"
+  },
+  "taskNotSet": "Nicht gesetzt",
+  "@taskNotSet": {
+    "description": "Anzeige unter einem optionalen Feld im Aufgabenformular, solange nichts gewählt ist"
+  },
+  "taskClear": "Entfernen",
+  "@taskClear": {
+    "description": "Hinweis am Knopf, der ein gewähltes Datum oder eine Uhrzeit wieder entfernt"
+  },
+  "taskSave": "Speichern",
+  "@taskSave": {
+    "description": "Knopf im Aufgabenformular, der die Aufgabe speichert"
+  },
   "moreVersion": "Version {version}",
   "@moreVersion": {
     "description": "Versionsanzeige unter „Mehr“",
