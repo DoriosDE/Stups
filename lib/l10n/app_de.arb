@@ -24,10 +24,6 @@
   "@todayHint": {
     "description": "Platzhaltertext auf „Heute“, bis der Tagesplan da ist"
   },
-  "tasksHint": "Hier landen bald deine Aufgaben und die Inbox.",
-  "@tasksHint": {
-    "description": "Platzhaltertext auf „Aufgaben“, bis Inbox und Liste da sind"
-  },
   "routinesHint": "Routinen und Gewohnheiten kommen in Version 0.2.",
   "@routinesHint": {
     "description": "Platzhaltertext auf „Routinen“"
@@ -47,6 +43,56 @@
   "captureTooltip": "Kopf frei machen",
   "@captureTooltip": {
     "description": "Hinweis am schwebenden Plus-Button zur Schnellerfassung"
+  },
+  "captureTitle": "Kopf frei machen",
+  "@captureTitle": {
+    "description": "Überschrift des Eingabeblatts, das der Plus-Button öffnet"
+  },
+  "captureHint": "Was geht dir durch den Kopf? Es landet in der Inbox, sortieren kannst du später.",
+  "@captureHint": {
+    "description": "Erklärung unter der Überschrift des Eingabeblatts"
+  },
+  "captureFieldHint": "z. B. Mama zurückrufen",
+  "@captureFieldHint": {
+    "description": "Beispieltext im leeren Eingabefeld der Schnellerfassung"
+  },
+  "captureDone": "Fertig",
+  "@captureDone": {
+    "description": "Knopf im Eingabeblatt, der den Gedanken in die Inbox speichert"
+  },
+  "captureSaved": "In der Inbox gespeichert.",
+  "@captureSaved": {
+    "description": "Kurze Meldung, nachdem ein Gedanke in die Inbox gespeichert wurde"
+  },
+  "inboxEmptyTitle": "Inbox leer",
+  "@inboxEmptyTitle": {
+    "description": "Überschrift der Inbox, wenn kein Gedanke wartet"
+  },
+  "inboxEmptyText": "Kopf frei. Neue Gedanken fängst du mit dem Plus-Button.",
+  "@inboxEmptyText": {
+    "description": "Erklärung der leeren Inbox mit Hinweis auf den Plus-Button"
+  },
+  "inboxIntro": "Hier landet alles, was du schnell festhältst. Sortieren kannst du, wenn du Zeit hast.",
+  "@inboxIntro": {
+    "description": "Erklärung über der Liste der Inbox"
+  },
+  "inboxToTask": "Zur Aufgabe",
+  "@inboxToTask": {
+    "description": "Knopf an einem Gedanken der Inbox, der daraus eine Aufgabe macht"
+  },
+  "inboxTaskCreated": "Als Aufgabe angelegt. Ergänze später den ersten Schritt.",
+  "@inboxTaskCreated": {
+    "description": "Kurze Meldung, nachdem aus einem Gedanken der Inbox eine Aufgabe wurde"
+  },
+  "inboxDelete": "{text} löschen",
+  "@inboxDelete": {
+    "description": "Hinweis am Löschen-Knopf eines Gedankens in der Inbox; der Gedanke steht davor",
+    "placeholders": {
+      "text": {
+        "type": "String",
+        "example": "Mama zurückrufen"
+      }
+    }
   },
   "moreVersion": "Version {version}",
   "@moreVersion": {

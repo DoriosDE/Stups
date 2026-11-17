@@ -1,7 +1,10 @@
+import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:stups/app.dart';
+import 'package:stups/core/db/app_database.dart';
+import 'package:stups/core/db/app_database_provider.dart';
 import 'package:stups/core/theme/app_theme.dart';
 
 void main() {
@@ -9,7 +12,21 @@ void main() {
     // Die Texte unten sind deutsch; Tests laufen sonst mit Systemsprache Englisch.
     tester.platformDispatcher.localesTestValue = const [Locale('de')];
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
-    await tester.pumpWidget(const ProviderScope(child: StupsApp()));
+    final db = AppDatabase(NativeDatabase.memory());
+    // Die Datenbank erst schließen, wenn die Oberfläche ihre Streams abbestellt
+    // hat und die Fake-Zeit deren Timer abgearbeitet hat; sonst hängt das
+    // Schließen für immer.
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(seconds: 1));
+      await tester.runAsync(db.close);
+    });
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        child: const StupsApp(),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
@@ -30,10 +47,7 @@ void main() {
 
     await tester.tap(find.widgetWithText(NavigationDestination, 'Aufgaben'));
     await tester.pumpAndSettle();
-    expect(
-      find.text('Hier landen bald deine Aufgaben und die Inbox.'),
-      findsOneWidget,
-    );
+    expect(find.text('Inbox leer'), findsOneWidget);
 
     await tester.tap(find.widgetWithText(NavigationDestination, 'Haushalt'));
     await tester.pumpAndSettle();

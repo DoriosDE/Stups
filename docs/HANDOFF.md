@@ -98,6 +98,7 @@ Der Test `test/core/db/schema_snapshot_test.dart` schlägt fehl, wenn das Schema
 - `CHECK`-Regeln in `customConstraints` müssen als **Text-Literale** in der Tabelle stehen, nicht über eine Hilfsfunktion. Der Schnappschuss-Generator liest nur Literale; eine Regel, die er nicht sieht, fehlt im Schnappschuss.
 - Eine Spalte `text` heißt in Dart `content` (`text().named('text')`), weil `text` in drift die Methode zum Anlegen von Spalten ist.
 - Zeitpunkte werden als absolute Zeit (UTC) gespeichert, Kalendertage als lokaler Text `yyyy-MM-dd`; das Format erzwingt eine `CHECK`-Regel.
+- **Widget-Tests mit drift-Streams hängen beim Schließen.** Zeigt ein Bildschirm eine Datenbank-Abfrage als Stream (`StreamProvider`), hängt `db.close()` im `tearDown` für immer. Die Datenbank erst im `addTearDown` des Tests schließen: erst `pumpWidget(const SizedBox())`, dann `pump(Duration(seconds: 1))` (die Fake-Zeit arbeitet die Timer der Abmeldung ab), dann `await tester.runAsync(db.close)`. Direkte Datenbankzugriffe im Test (Daten vorbereiten, Ergebnis nachprüfen) laufen in `tester.runAsync`; was die Oberfläche auslöst, läuft mit `pumpAndSettle`. Beispiel: `test/features/inbox/inbox_view_test.dart`.
 - Fremdschlüssel sind eingeschaltet. Löschen einer Aufgabe entfernt Unterschritte, Vorkommen und Häkchen; ein Bereich mit Aufgaben lässt sich nicht löschen. Dass eingebaute Bereiche nie gelöscht werden dürfen, setzt erst die Aufgabenlogik (Ticket 04) durch, nicht das Schema.
 
 ## Sprachen
