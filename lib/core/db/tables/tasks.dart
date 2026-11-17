@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../enums.dart';
-import '../ids.dart';
+import '../defaults.dart';
 import 'areas.dart';
 
 /// Aufgaben, die gemeinsame Regel für alle Bereiche. Konkrete Tage stehen in
@@ -28,8 +28,7 @@ class Tasks extends Table {
   DateTimeColumn get reminderAt => dateTime().nullable()();
   IntColumn get warnMin => integer().nullable()();
   BoolColumn get active => boolean().withDefault(const Constant(true))();
-  DateTimeColumn get createdAt =>
-      dateTime().clientDefault(() => DateTime.now().toUtc())();
+  DateTimeColumn get createdAt => dateTime().clientDefault(nowUtc)();
 
   @override
   Set<Column> get primaryKey => {id};

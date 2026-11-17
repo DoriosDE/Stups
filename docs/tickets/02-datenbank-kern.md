@@ -25,6 +25,10 @@ Das drift-Schema für den Kern ist angelegt und getestet. Die Datenbank ist spra
 
 - Eingebaute Bereiche lassen sich nur ein- und ausblenden, nicht umbenennen oder löschen; eigene Bereiche sind frei benennbar. Das setzen Repository und Oberfläche durch (Ticket 04), das Schema verhindert nur das Löschen von Bereichen mit Aufgaben.
 - Die Wiederholungs-Engine gehört nicht hierher.
+- `Task.priority` ist Pflicht mit Standard B; Ticket 04 kann das ändern. `Task.createdAt` ist hinzugekommen (Sortierung, Rückblick) und steht jetzt in der SPEC.
+- `Occurrence.status` kennt `open` (angelegt, noch nichts passiert), `started`, `done`, `postponed` und `skipped`. `DayPlan.energy` kennt `low`, `medium` und `high`.
+- `DistractionNote.occurrenceId` ist optional; wird das Vorkommen gelöscht, bleibt die Notiz bestehen (`SET NULL`).
+- Zeitpunkte speichert drift als absolute Zeit; das Schema erzwingt kein UTC, der Code übergibt UTC (`nowUtc()`). Das Tagesformat prüft nur die Form, nicht ob der Tag existiert.
 - Typisierte Konverter für die JSON-Spalten folgen, wenn sie gebraucht werden: bei der Wiederholungs-Engine (v0.2) und bei „Heute“ (Ticket 05).
 
 ## Hinweis zu Paketen

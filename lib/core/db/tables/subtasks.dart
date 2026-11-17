@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-import '../ids.dart';
+import '../defaults.dart';
 import 'tasks.dart';
 
 /// Unterschritte einer Aufgabe, in der Reihenfolge von [sortOrder].

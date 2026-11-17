@@ -15,14 +15,14 @@ void main() {
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
   test(
-    'das Schema im Code entspricht dem Schnappschuss von Version 1',
+    'das Schema im Code entspricht dem Schnappschuss der aktuellen Version',
     () async {
       // Frisch aus dem Code angelegt (nicht aus dem Schnappschuss), sonst wäre
       // der Vergleich mit dem Schnappschuss trivial gleich.
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
 
-      await verifier.migrateAndValidate(db, 1);
+      await verifier.migrateAndValidate(db, db.schemaVersion);
     },
   );
 }

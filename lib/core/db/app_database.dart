@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
 import 'enums.dart';
-import 'ids.dart';
+import 'defaults.dart';
 import 'tables/areas.dart';
 import 'tables/day_plans.dart';
 import 'tables/distraction_notes.dart';
@@ -13,15 +13,9 @@ import 'tables/subtasks.dart';
 import 'tables/tasks.dart';
 
 export 'enums.dart';
+export 'tables/areas.dart' show BuiltInArea;
 
 part 'app_database.g.dart';
-
-/// Kennungen der eingebauten Bereiche.
-abstract final class BuiltInArea {
-  static const household = 'household';
-  static const work = 'work';
-  static const personal = 'personal';
-}
 
 @DriftDatabase(
   tables: [

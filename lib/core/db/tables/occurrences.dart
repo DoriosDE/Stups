@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../enums.dart';
-import '../ids.dart';
+import '../defaults.dart';
 import 'tasks.dart';
 
 /// Ein Tag einer Aufgabe. Wird erst gespeichert, wenn jemand die Aufgabe

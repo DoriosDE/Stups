@@ -91,13 +91,13 @@ Der erste Befehl erzeugt `*.g.dart`, der zweite den Test-Helfer für den Schema-
 2. Neuen Schnappschuss schreiben: `dart run drift_dev schema dump lib/core/db/app_database.dart drift_schemas/`. Der alte Schnappschuss (`drift_schema_v1.json` und so weiter) bleibt im Git, er ist die Grundlage für Migrationstests.
 3. Test-Helfer neu erzeugen (zweiter Befehl oben) und die Migration testen.
 
-Der Test `test/core/db/schema_snapshot_test.dart` schlägt fehl, wenn das Schema im Code vom Schnappschuss abweicht. Ändert man also eine Tabelle und vergisst Version oder Schnappschuss, fällt das sofort auf.
+Der Test `test/core/db/schema_snapshot_test.dart` schlägt fehl, wenn das Schema im Code vom Schnappschuss abweicht. Ändert man also eine Tabelle und vergisst Version oder Schnappschuss, fällt das sofort auf. Er vergleicht immer mit dem Schnappschuss der aktuellen `schemaVersion`, braucht also nach Schritt 1 und 2 keine Anpassung.
 
 **Zu wissen:**
 - `CHECK`-Regeln in `customConstraints` müssen als **Text-Literale** in der Tabelle stehen, nicht über eine Hilfsfunktion. Der Schnappschuss-Generator liest nur Literale; eine Regel, die er nicht sieht, fehlt im Schnappschuss.
 - Eine Spalte `text` heißt in Dart `content` (`text().named('text')`), weil `text` in drift die Methode zum Anlegen von Spalten ist.
 - Zeitpunkte werden als absolute Zeit (UTC) gespeichert, Kalendertage als lokaler Text `yyyy-MM-dd`; das Format erzwingt eine `CHECK`-Regel.
-- Fremdschlüssel sind eingeschaltet. Löschen einer Aufgabe entfernt Unterschritte, Vorkommen und Häkchen; ein Bereich mit Aufgaben lässt sich nicht löschen.
+- Fremdschlüssel sind eingeschaltet. Löschen einer Aufgabe entfernt Unterschritte, Vorkommen und Häkchen; ein Bereich mit Aufgaben lässt sich nicht löschen. Dass eingebaute Bereiche nie gelöscht werden dürfen, setzt erst die Aufgabenlogik (Ticket 04) durch, nicht das Schema.
 
 ## Designregeln aus den Prototyp-Runden
 

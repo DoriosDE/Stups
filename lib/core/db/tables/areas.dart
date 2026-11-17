@@ -1,6 +1,13 @@
 import 'package:drift/drift.dart';
 
-import '../ids.dart';
+import '../defaults.dart';
+
+/// Kennungen der eingebauten Bereiche.
+abstract final class BuiltInArea {
+  static const household = 'household';
+  static const work = 'work';
+  static const personal = 'personal';
+}
 
 /// Bereiche (Haushalt, Arbeit, Persönliches und eigene).
 ///

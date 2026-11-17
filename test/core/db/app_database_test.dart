@@ -51,6 +51,8 @@ void main() {
     );
   });
 
+  /// Legt je Datensatz an und liefert die ID. Die Hilfen stehen hier oben, damit
+  /// die Gruppen darunter nur das beschreiben, worum es in ihnen geht.
   Future<String> insertTask([String title = 'Aufgabe']) async {
     final task = await db
         .into(db.tasks)
@@ -60,19 +62,37 @@ void main() {
     return task.id;
   }
 
+  Future<String> insertSubtask(
+    String taskId,
+    String title, [
+    int sortOrder = 0,
+  ]) async {
+    final subtask = await db
+        .into(db.subtasks)
+        .insertReturning(
+          SubtasksCompanion.insert(
+            taskId: taskId,
+            title: title,
+            sortOrder: sortOrder,
+          ),
+        );
+    return subtask.id;
+  }
+
+  Future<String> insertOccurrence(String taskId, String date) async {
+    final occurrence = await db
+        .into(db.occurrences)
+        .insertReturning(
+          OccurrencesCompanion.insert(taskId: taskId, date: date),
+        );
+    return occurrence.id;
+  }
+
   group('Unterschritte', () {
     test('verschwinden mit ihrer Aufgabe', () async {
       final taskId = await insertTask();
       for (final (index, title) in ['Korb holen', 'Aufhängen'].indexed) {
-        await db
-            .into(db.subtasks)
-            .insert(
-              SubtasksCompanion.insert(
-                taskId: taskId,
-                title: title,
-                sortOrder: index,
-              ),
-            );
+        await insertSubtask(taskId, title, index);
       }
       expect(await db.select(db.subtasks).get(), hasLength(2));
 
@@ -83,23 +103,11 @@ void main() {
 
     test('ein Unterschritt ohne Aufgabe wird abgelehnt', () {
       expect(
-        db
-            .into(db.subtasks)
-            .insert(
-              SubtasksCompanion.insert(
-                taskId: 'gibt-es-nicht',
-                title: 'Verwaist',
-                sortOrder: 0,
-              ),
-            ),
+        insertSubtask('gibt-es-nicht', 'Verwaist'),
         throwsA(isA<SqliteException>()),
       );
     });
   });
-
-  Future<void> insertOccurrence(String taskId, String date) => db
-      .into(db.occurrences)
-      .insert(OccurrencesCompanion.insert(taskId: taskId, date: date));
 
   group('Vorkommen', () {
     test('beginnen offen und ohne Zeiten', () async {
@@ -154,27 +162,8 @@ void main() {
 
     setUp(() async {
       final taskId = await insertTask();
-      subtaskId =
-          (await db
-                  .into(db.subtasks)
-                  .insertReturning(
-                    SubtasksCompanion.insert(
-                      taskId: taskId,
-                      title: 'Korb holen',
-                      sortOrder: 0,
-                    ),
-                  ))
-              .id;
-      occurrenceId =
-          (await db
-                  .into(db.occurrences)
-                  .insertReturning(
-                    OccurrencesCompanion.insert(
-                      taskId: taskId,
-                      date: '2026-11-17',
-                    ),
-                  ))
-              .id;
+      subtaskId = await insertSubtask(taskId, 'Korb holen');
+      occurrenceId = await insertOccurrence(taskId, '2026-11-17');
       await db
           .into(db.subtaskChecks)
           .insert(
@@ -238,23 +227,19 @@ void main() {
       'eine Notiz bleibt erhalten, wenn ihr Vorkommen gelöscht wird',
       () async {
         final taskId = await insertTask();
-        final occurrence = await db
-            .into(db.occurrences)
-            .insertReturning(
-              OccurrencesCompanion.insert(taskId: taskId, date: '2026-11-17'),
-            );
+        final occurrenceId = await insertOccurrence(taskId, '2026-11-17');
         await db
             .into(db.distractionNotes)
             .insert(
               DistractionNotesCompanion.insert(
                 content: 'Mail an Anna',
-                occurrenceId: Value(occurrence.id),
+                occurrenceId: Value(occurrenceId),
               ),
             );
 
         await (db.delete(
           db.occurrences,
-        )..where((o) => o.id.equals(occurrence.id))).go();
+        )..where((o) => o.id.equals(occurrenceId))).go();
 
         final note = await db.select(db.distractionNotes).getSingle();
         expect(note.content, 'Mail an Anna');
@@ -414,12 +399,22 @@ void main() {
       );
     });
 
-    test('ein Bereich ohne Aufgaben lässt sich löschen', () async {
-      final areaId = await householdId();
+    // Dass eingebaute Bereiche nicht gelöscht werden dürfen, setzt die
+    // Aufgabenlogik um (Ticket 04), nicht das Schema; deshalb hier ein eigener.
+    test('ein eigener Bereich ohne Aufgaben lässt sich löschen', () async {
+      final area = await db
+          .into(db.areas)
+          .insertReturning(
+            AreasCompanion.insert(
+              name: const Value('Garten'),
+              colorKey: 'mint',
+              iconKey: 'leaf',
+            ),
+          );
 
       final deleted = await (db.delete(
         db.areas,
-      )..where((a) => a.id.equals(areaId))).go();
+      )..where((a) => a.id.equals(area.id))).go();
 
       expect(deleted, 1);
     });
