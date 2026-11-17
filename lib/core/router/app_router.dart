@@ -5,6 +5,8 @@ import '../../features/routines/routines_screen.dart';
 import '../../features/household/household_screen.dart';
 import '../../features/more/more_screen.dart';
 import '../../features/shell/shell_scaffold.dart';
+import '../../features/tasks/task_detail_screen.dart';
+import '../../features/tasks/task_edit_screen.dart';
 import '../../features/tasks/task_form_screen.dart';
 import '../../features/tasks/tasks_screen.dart';
 import '../../features/today/today_screen.dart';
@@ -16,6 +18,14 @@ abstract final class AppRoutes {
   static const household = '/haushalt';
   static const more = '/mehr';
   static const newTask = '/aufgaben/neu';
+  static const task = '/aufgaben/:id';
+  static const editTask = '/aufgaben/:id/bearbeiten';
+
+  /// Der Pfad zur Detailansicht der Aufgabe [id].
+  static String taskPath(String id) => '/aufgaben/$id';
+
+  /// Der Pfad zum Bearbeiten der Aufgabe [id].
+  static String editTaskPath(String id) => '/aufgaben/$id/bearbeiten';
 }
 
 GoRouter createRouter({String initialLocation = AppRoutes.today}) {
@@ -38,6 +48,16 @@ GoRouter createRouter({String initialLocation = AppRoutes.today}) {
       GoRoute(
         path: AppRoutes.newTask,
         builder: (context, state) => const TaskFormScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.task,
+        builder: (context, state) =>
+            TaskDetailScreen(taskId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: AppRoutes.editTask,
+        builder: (context, state) =>
+            TaskEditScreen(taskId: state.pathParameters['id']!),
       ),
     ],
   );

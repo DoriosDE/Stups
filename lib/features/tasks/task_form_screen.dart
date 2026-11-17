@@ -9,28 +9,48 @@ import '../../core/l10n/l10n.dart';
 import 'task_providers.dart';
 import 'task_repository.dart';
 
-/// Formular für eine neue Aufgabe.
+/// Formular für eine neue Aufgabe, oder, mit [initial], zum Bearbeiten.
 ///
 /// Oben stehen nur Titel und erster Mini-Schritt; alles Weitere ist unter „Mehr
 /// Details“ eingeklappt (eine Sache pro Bildschirm).
 class TaskFormScreen extends ConsumerStatefulWidget {
-  const TaskFormScreen({super.key});
+  const TaskFormScreen({super.key, this.initial});
+
+  /// Die Aufgabe, die bearbeitet wird; `null` legt eine neue an.
+  final TaskDetail? initial;
 
   @override
   ConsumerState<TaskFormScreen> createState() => _TaskFormScreenState();
 }
 
 class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
-  final _title = TextEditingController();
-  final _firstStep = TextEditingController();
-  final _estimate = TextEditingController();
-  final _steps = <TextEditingController>[];
-  Priority _priority = Priority.b;
-  DateTime? _dueDate;
-  DateTime? _reminderAt;
+  late final TextEditingController _title;
+  late final TextEditingController _firstStep;
+  late final TextEditingController _estimate;
+  late final List<TextEditingController> _steps;
+  late Priority _priority;
+  late DateTime? _dueDate;
+  late DateTime? _reminderAt;
 
   /// Gewählter Bereich; ohne Wahl gilt „Persönliches“.
   String? _areaId;
+
+  @override
+  void initState() {
+    super.initState();
+    final task = widget.initial?.task;
+    _title = TextEditingController(text: task?.title);
+    _firstStep = TextEditingController(text: task?.firstStep);
+    _estimate = TextEditingController(text: task?.estimateMin?.toString());
+    _steps = [
+      for (final step in widget.initial?.subtasks ?? const <Subtask>[])
+        TextEditingController(text: step.title),
+    ];
+    _priority = task?.priority ?? Priority.b;
+    _dueDate = task?.dueDate == null ? null : DateTime.parse(task!.dueDate!);
+    _reminderAt = task?.reminderAt;
+    _areaId = task?.areaId;
+  }
 
   @override
   void dispose() {
@@ -44,20 +64,23 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
   }
 
   Future<void> _save(List<Area> areas) async {
-    await ref
-        .read(taskRepositoryProvider)
-        .create(
-          TaskDraft(
-            title: _title.text,
-            areaId: _selectedAreaId(areas)!,
-            firstStep: _firstStep.text,
-            estimateMin: int.tryParse(_estimate.text),
-            priority: _priority,
-            steps: [for (final step in _steps) step.text],
-            dueDate: _dueDate,
-            reminderAt: _reminderAt,
-          ),
-        );
+    final draft = TaskDraft(
+      title: _title.text,
+      areaId: _selectedAreaId(areas)!,
+      firstStep: _firstStep.text,
+      estimateMin: int.tryParse(_estimate.text),
+      priority: _priority,
+      steps: [for (final step in _steps) step.text],
+      dueDate: _dueDate,
+      reminderAt: _reminderAt,
+    );
+    final repository = ref.read(taskRepositoryProvider);
+    final initial = widget.initial;
+    if (initial == null) {
+      await repository.create(draft);
+    } else {
+      await repository.update(initial.task.id, draft);
+    }
     if (mounted) context.pop();
   }
 
@@ -105,7 +128,9 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
     final l10n = context.l10n;
     final areas = ref.watch(areasProvider).value;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.taskNew)),
+      appBar: AppBar(
+        title: Text(widget.initial == null ? l10n.taskNew : l10n.taskEditTitle),
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(20),

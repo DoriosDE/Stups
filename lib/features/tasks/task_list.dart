@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/db/app_database.dart';
 import '../../core/l10n/area_display_name.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/router/app_router.dart';
 import 'task_providers.dart';
 import 'task_repository.dart';
 
@@ -80,6 +82,8 @@ class _TaskRow extends StatelessWidget {
             : null,
       ),
       subtitle: meta.isEmpty ? null : Text(meta),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => context.push(AppRoutes.taskPath(task.id)),
     );
   }
 }
