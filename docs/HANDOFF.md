@@ -52,6 +52,24 @@ Stand: 17. November 2026. Dieses Dokument fasst zusammen, wie das Konzept entsta
 - **Voraussetzungen vor dem ersten öffentlichen Release:** Namensprüfung (DPMA, TMview Klassen 9 und 42, Stores, Domain, GitHub), Logo, geprüfte Quellen. Bis dahin geht die APK nur an einen kleinen Testkreis.
 - **Vor v1.0:** fachliche Begleitung und rechtliche Prüfung der Abgrenzung zum Medizinprodukt.
 
+## Versionierung und Varianten
+
+Die Version kommt allein aus dem Git-Tag. `tool/print_version.dart` berechnet daraus Name, Code und Variante.
+
+| Tag | Branch | versionName | versionCode | Variante | App-ID | App-Name |
+| --- | --- | --- | --- | --- | --- | --- |
+| `v0.1.0-dev` | `develop` | `0.1.0-dev` | 1000 | `dev` | `de.dorios.stups.dev` | Stups Dev |
+| `v0.1.0` | `master` | `0.1.0` | 1000 | `prod` | `de.dorios.stups` | Stups |
+| kein Tag (lokal) | beliebig | `0.0.0-lokal` | 1 | `dev` | `de.dorios.stups.dev` | Stups Dev |
+
+- **versionCode:** `Major·1.000.000 + Minor·1.000 + Patch`, ohne Zusatz. Minor und Patch gehen bis 999, Major bis 2099 (Android erlaubt höchstens 2.100.000.000).
+- **Tag-Format:** `v<Major>.<Minor>.<Patch>` mit optionalem `-dev`, ohne führende Nullen. Alles andere bricht den Build ab.
+- **Dev und Prod nebeneinander:** Die Dev-App hat eine eigene App-ID und eigene Daten. Deshalb ist es unkritisch, dass Dev- und Release-Tag denselben Code haben können.
+- **Universal-APK:** Wir bauen ohne `--split-per-abi`, weil Flutter dort `1000 × ABI` zum Code addiert.
+- **Lokal:** `flutter run` und `flutter build` nehmen ohne Angabe die Dev-App (`default-flavor` in der `pubspec.yaml`). In VS Code startet `.vscode/launch.json` mit `--flavor dev`.
+- **CI:** Bei einem Tag `v*` übergibt die CI `--flavor`, `--build-name` und `--build-number` und prüft danach mit `tool/verify_apk_version.sh`, ob die APK zu den erwarteten Werten passt.
+- **F-Droid:** Die Build-Anleitung dort muss dieselben Werte aus dem Tag übergeben. Das ist noch zu prüfen.
+
 ## Designregeln aus den Prototyp-Runden
 
 - Ein Dashboard mit vielen Elementen (Energie-Chips, große Schritt-Karte, Figur, dicke Knöpfe) wirkte unübersichtlich.
