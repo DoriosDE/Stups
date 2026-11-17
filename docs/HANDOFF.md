@@ -34,6 +34,8 @@ Stand: 17. November 2026. Dieses Dokument fasst zusammen, wie das Konzept entsta
 | State-Management | Riverpod ohne Codegenerierung |
 | IDs und Zeit | UUIDs als Text, UTC-Zeitpunkte, lokale Kalendertage als `yyyy-MM-dd` |
 | Schema | Wiederholungen und Occurrence von Anfang an, Engine erst ab v0.2 |
+| Datenbank | sprachneutral: eingebaute Bereiche nur als Kennung (`household`, `work`, `personal`), Namen aus Sprachdateien (Ticket 15); eingebaute Bereiche nur ein- und ausblendbar |
+| Generierter Code | `*.g.dart` (drift) nicht im Git; `dart run build_runner build` lokal und in der CI |
 | Tests | Logik testgetrieben (Tagesplan, Erinnerungsfenster, Backup-Roundtrip), Widget-Tests für Heute und Fokus |
 | Verpasste Aufgaben | verfallen aus dem Tagesplan, bleiben in der Liste, keine Überfällig-Liste |
 | Tagesplan | A, dann B, dann C, nach Fälligkeit, höchstens 3 |
