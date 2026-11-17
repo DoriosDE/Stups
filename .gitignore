@@ -22,3 +22,7 @@ android/**/GeneratedPluginRegistrant.*
 android/key.properties
 *.jks
 *.keystore
+
+# Von build_runner erzeugt (drift); siehe docs/HANDOFF.md
+*.g.dart
+test/generated/
