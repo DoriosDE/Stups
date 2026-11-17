@@ -15,3 +15,5 @@ Der Plus-Button erfasst Gedanken ohne Kategorie in der Inbox.
 - [ ] Inbox-Ansicht; ein Eintrag wird zur Aufgabe oder gelöscht (Routine folgt in v0.2)
 - [ ] Texte nutzen die Du-Form und sind kurz
 - [ ] Widget-Test für den Erfassen-Ablauf
+
+Setzt Ticket 15 (Mehrsprachigkeit vorbereiten) voraus: neue Texte entstehen gleich in den Sprachdateien.

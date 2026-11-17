@@ -34,6 +34,8 @@ Stand: 17. November 2026. Dieses Dokument fasst zusammen, wie das Konzept entsta
 | State-Management | Riverpod ohne Codegenerierung |
 | IDs und Zeit | UUIDs als Text, UTC-Zeitpunkte, lokale Kalendertage als `yyyy-MM-dd` |
 | Schema | Wiederholungen und Occurrence von Anfang an, Engine erst ab v0.2 |
+| Datenbank | sprachneutral: eingebaute Bereiche nur als Kennung (`household`, `work`, `personal`), Namen aus Sprachdateien (Ticket 15); eingebaute Bereiche nur ein- und ausblendbar |
+| Generierter Code | `*.g.dart` (drift) nicht im Git; `dart run build_runner build` lokal und in der CI |
 | Tests | Logik testgetrieben (Tagesplan, Erinnerungsfenster, Backup-Roundtrip), Widget-Tests für Heute und Fokus |
 | Verpasste Aufgaben | verfallen aus dem Tagesplan, bleiben in der Liste, keine Überfällig-Liste |
 | Tagesplan | A, dann B, dann C, nach Fälligkeit, höchstens 3 |
@@ -69,6 +71,33 @@ Die Version kommt allein aus dem Git-Tag. `tool/print_version.dart` berechnet da
 - **Lokal:** `flutter run` und `flutter build` nehmen ohne Angabe die Dev-App (`default-flavor` in der `pubspec.yaml`). In VS Code startet `.vscode/launch.json` mit `--flavor dev`.
 - **CI:** Bei jedem Lauf bestimmt die CI die Version mit `tool/print_version.dart` (mit Tag `v*` aus dem Tag, sonst `0.0.0-lokal`), übergibt `--flavor`, `--build-name` und `--build-number` und prüft danach mit `tool/verify_apk_version.sh`, ob die APK zu den erwarteten Werten passt. Ein ungültiger Tag bricht den Lauf ab.
 - **F-Droid:** Die Build-Anleitung dort muss dieselben Werte aus dem Tag übergeben. Das ist noch zu prüfen.
+
+## Datenbank
+
+Die Datenbank ist eine lokale SQLite-Datei, beschrieben mit drift (`lib/core/db/`: eine Datei pro Tabelle unter `tables/`, die Klasse `AppDatabase`). Sie ist sprachneutral: Texte, die die App mitbringt, stehen nicht in der Datenbank (eingebaute Bereiche tragen nur eine Kennung wie `household`, ihr Name kommt aus den Sprachdateien).
+
+**Erzeugter Code liegt nicht im Git.** Nach dem Klonen und nach jeder Änderung an einer Tabelle:
+
+```
+dart run build_runner build --delete-conflicting-outputs
+dart run drift_dev schema generate drift_schemas/ test/generated/
+```
+
+Der erste Befehl erzeugt `*.g.dart`, der zweite den Test-Helfer für den Schema-Schnappschuss. Die CI führt beide aus.
+
+**Schema ändern:**
+
+1. `schemaVersion` in `AppDatabase` erhöhen und eine Migration in `migration` ergänzen.
+2. Neuen Schnappschuss schreiben: `dart run drift_dev schema dump lib/core/db/app_database.dart drift_schemas/`. Der alte Schnappschuss (`drift_schema_v1.json` und so weiter) bleibt im Git, er ist die Grundlage für Migrationstests.
+3. Test-Helfer neu erzeugen (zweiter Befehl oben) und die Migration testen.
+
+Der Test `test/core/db/schema_snapshot_test.dart` schlägt fehl, wenn das Schema im Code vom Schnappschuss abweicht. Ändert man also eine Tabelle und vergisst Version oder Schnappschuss, fällt das sofort auf. Er vergleicht immer mit dem Schnappschuss der aktuellen `schemaVersion`, braucht also nach Schritt 1 und 2 keine Anpassung.
+
+**Zu wissen:**
+- `CHECK`-Regeln in `customConstraints` müssen als **Text-Literale** in der Tabelle stehen, nicht über eine Hilfsfunktion. Der Schnappschuss-Generator liest nur Literale; eine Regel, die er nicht sieht, fehlt im Schnappschuss.
+- Eine Spalte `text` heißt in Dart `content` (`text().named('text')`), weil `text` in drift die Methode zum Anlegen von Spalten ist.
+- Zeitpunkte werden als absolute Zeit (UTC) gespeichert, Kalendertage als lokaler Text `yyyy-MM-dd`; das Format erzwingt eine `CHECK`-Regel.
+- Fremdschlüssel sind eingeschaltet. Löschen einer Aufgabe entfernt Unterschritte, Vorkommen und Häkchen; ein Bereich mit Aufgaben lässt sich nicht löschen. Dass eingebaute Bereiche nie gelöscht werden dürfen, setzt erst die Aufgabenlogik (Ticket 04) durch, nicht das Schema.
 
 ## Designregeln aus den Prototyp-Runden
 

@@ -144,7 +144,7 @@ Alle Bereiche speisen ein gemeinsames Aufgabensystem, damit es nur eine Stelle g
 - Felder: Titel, erster Mini-Schritt, weitere Unterschritte, geschätzte Dauer, Priorität A, B oder C, Bereich, optional Fälligkeit und Erinnerung
 - Beim Anlegen fragt die App: „Was ist der allererste Mini-Schritt?“ Ein Vorschlag aus Vorlagen ist vorausgefüllt.
 - Nach dem Erledigen speichert die App die tatsächliche Dauer und zeigt den Vergleich zur Schätzung, ohne Bewertung
-- Bereiche: Haushalt, Arbeit, Persönliches, frei ergänzbar
+- Bereiche: Haushalt, Arbeit, Persönliches, frei ergänzbar. Die eingebauten Bereiche tragen keinen Text in der Datenbank (nur eine Kennung wie `household`); ihr Name kommt aus den Sprachdateien. Sie lassen sich ein- und ausblenden, aber nicht umbenennen oder löschen; eigene Bereiche sind frei benennbar.
 
 ### Heute
 
@@ -256,9 +256,9 @@ Kern ist eine gemeinsame Task-Tabelle für alle Bereiche. Aufgaben (die Regel) s
 
 | Tabelle | Wichtige Felder | Beziehung |
 | --- | --- | --- |
-| Area | id, name, colorKey, iconKey, builtIn | hat viele Tasks |
+| Area | id, builtInKey (leer bei eigenen Bereichen), name (nur bei eigenen Bereichen), colorKey, iconKey, hidden | hat viele Tasks |
 | InboxItem | id, text, createdAt | wird zu Task oder Routine, oder gelöscht |
-| Task | id, areaId, roomId (optional), title, firstStep, note, estimateMin, priority (A, B, C), dueDate, recurrence (JSON), reminderAt, warnMin, active | hat Subtasks und Occurrences |
+| Task | id, areaId, roomId (optional), title, firstStep, note, estimateMin, priority (A, B, C), dueDate, recurrence (JSON), reminderAt, warnMin, active, createdAt | hat Subtasks und Occurrences |
 | Subtask | id, taskId, title, sortOrder | gehört zu Task |
 | Occurrence | id, taskId, date, status, startedAt, completedAt, actualMin | ein Tag einer Task, Basis für den Schätzabgleich |
 | SubtaskCheck | occurrenceId, subtaskId, done | Haken pro Tag |
