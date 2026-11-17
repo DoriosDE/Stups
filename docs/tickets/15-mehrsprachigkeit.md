@@ -1,6 +1,6 @@
 # Ticket 15: Mehrsprachigkeit vorbereiten
 
-- **Status:** in Arbeit
+- **Status:** erledigt
 - **Branch:** `feature/mehrsprachigkeit`
 - **Designprinzip:** Freundlicher Ton; Barrierearm
 
