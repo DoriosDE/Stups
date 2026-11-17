@@ -23,3 +23,5 @@ Repo und Flutter-Projekt stehen, CI läuft, Theme und 5-Tab-Gerüst sind da.
 Beginnt mit Docs, Lizenz und Tickets; das Flutter-Gerüst folgt in eigenen Commits.
 
 Lokal bestätigt: `flutter build apk --debug` läuft durch. Dafür waren nötig: `compileSdk = 37` und Core-Library-Desugaring (`flutter_local_notifications`), `kotlin.incremental=false` (Pub-Cache auf C:, Projekt auf D:) und ein JDK 17 oder neuer für Flutter (`flutter config --jdk-dir`). Offen bis zum Abschluss: erster grüner CI-Lauf auf GitHub. Danach den Status auf `erledigt` setzen.
+
+Auf einem Android-17-Gerät (API 37) geprüft: Kaltstart auf „Heute“, Wechsel zwischen den Tabs, Hell- und Dunkelmodus, Fredoka (Überschriften, Gewicht 700) und Lexend (Text) werden richtig dargestellt, Systemschriftgröße 1,8 ohne Überlauf. Bei 1,8 stehen die Tab-Beschriftungen „Aufgaben“ und „Routinen“ eng nebeneinander; das beobachten wir bei weiteren Screens. Der Plus-Button ist bewusst noch ohne Funktion (Ticket 03).
