@@ -18,3 +18,7 @@ Lokale Erinnerungen über die Schnittstelle `ReminderService`.
 - [ ] Exakter Alarm (Android 14+) erst beim ersten Timer-Start erklärt und abgefragt, sonst ungenauer Alarm
 - [ ] Aktionen in der Benachrichtigung: „Erledigt“, „Später“ (1 Stunde), „Fokus starten“
 - [ ] Planungslogik testgetrieben mit Fake-Dienst
+
+## Hinweis zu Paketen
+
+Hier kommt `flutter_timezone` in die `pubspec.yaml` (aktuelle Zeitzone für die Planung).

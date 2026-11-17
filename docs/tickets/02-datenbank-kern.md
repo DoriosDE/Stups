@@ -19,3 +19,7 @@ Das drift-Schema für den Kern ist angelegt und getestet.
 ## Hinweis
 
 Die Wiederholungs-Engine gehört nicht hierher.
+
+## Hinweis zu Paketen
+
+Hier kommen `drift_flutter`, `drift_dev`, `build_runner` und `uuid` in die `pubspec.yaml`. Sie wurden in Ticket 01 bewusst wieder entfernt.

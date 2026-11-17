@@ -11,7 +11,7 @@ abstract final class StupsTheme {
       brightness: Brightness.light,
     ).copyWith(
       primary: StupsColors.primary,
-      onPrimary: Colors.white,
+      onPrimary: StupsColors.onPrimary,
       primaryContainer: StupsColors.primaryTint,
       onPrimaryContainer: StupsColors.primaryEdge,
       secondary: StupsColors.start,
@@ -47,18 +47,21 @@ abstract final class StupsTheme {
       scaffoldBackgroundColor: scheme.surface,
       fontFamily: StupsFonts.body,
     );
-    TextStyle heading(TextStyle? s, FontWeight w) => (s ?? const TextStyle())
-        .copyWith(fontFamily: StupsFonts.heading, fontWeight: w);
-    final t = base.textTheme;
+    TextStyle heading(TextStyle? style, FontWeight weight) =>
+        (style ?? const TextStyle()).copyWith(
+          fontFamily: StupsFonts.heading,
+          fontWeight: weight,
+        );
+    final text = base.textTheme;
     return base.copyWith(
-      textTheme: t.copyWith(
-        displayLarge: heading(t.displayLarge, FontWeight.w700),
-        displayMedium: heading(t.displayMedium, FontWeight.w700),
-        displaySmall: heading(t.displaySmall, FontWeight.w700),
-        headlineLarge: heading(t.headlineLarge, FontWeight.w700),
-        headlineMedium: heading(t.headlineMedium, FontWeight.w700),
-        headlineSmall: heading(t.headlineSmall, FontWeight.w600),
-        titleLarge: heading(t.titleLarge, FontWeight.w600),
+      textTheme: text.copyWith(
+        displayLarge: heading(text.displayLarge, FontWeight.w700),
+        displayMedium: heading(text.displayMedium, FontWeight.w700),
+        displaySmall: heading(text.displaySmall, FontWeight.w700),
+        headlineLarge: heading(text.headlineLarge, FontWeight.w700),
+        headlineMedium: heading(text.headlineMedium, FontWeight.w700),
+        headlineSmall: heading(text.headlineSmall, FontWeight.w600),
+        titleLarge: heading(text.titleLarge, FontWeight.w600),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
@@ -69,7 +72,7 @@ abstract final class StupsTheme {
       navigationBarTheme: NavigationBarThemeData(
         height: 72,
         backgroundColor: scheme.brightness == Brightness.light
-            ? Colors.white
+            ? StupsColors.card
             : StupsColors.darkSurface,
         indicatorColor: scheme.primaryContainer,
         labelTextStyle: WidgetStatePropertyAll(

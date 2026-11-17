@@ -14,3 +14,7 @@ Export und Import aller Daten als JSON-Datei.
 - [ ] Import ersetzt nach Bestätigung alle Daten, vorher automatische Sicherheitskopie
 - [ ] Roundtrip-Test: Export, Import, identische Daten
 - [ ] Einstellungen: Export, Import, alles zurücksetzen
+
+## Hinweis zu Paketen
+
+Hier kommen `share_plus`, `file_picker` und `path_provider` in die `pubspec.yaml`.

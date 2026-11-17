@@ -37,11 +37,11 @@ class ShellScaffold extends StatelessWidget {
           initialLocation: index == navigationShell.currentIndex,
         ),
         destinations: [
-          for (final d in _destinations)
+          for (final destination in _destinations)
             NavigationDestination(
-              icon: Icon(d.icon),
-              selectedIcon: Icon(d.selected),
-              label: d.label,
+              icon: Icon(destination.icon),
+              selectedIcon: Icon(destination.selected),
+              label: destination.label,
             ),
         ],
       ),

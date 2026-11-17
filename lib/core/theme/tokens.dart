@@ -4,6 +4,8 @@ import 'package:material_ui/material_ui.dart';
 abstract final class StupsColors {
   // Hell
   static const background = Color(0xFFF6F4FF);
+  static const card = Color(0xFFFFFFFF);
+  static const onPrimary = Color(0xFFFFFFFF);
   static const ink = Color(0xFF1F1A3D);
   static const primary = Color(0xFF5B3DF5);
   static const primaryEdge = Color(0xFF3B289F);
