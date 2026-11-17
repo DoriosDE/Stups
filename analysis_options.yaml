@@ -13,6 +13,8 @@ analyzer:
   exclude:
     - build/**
     - android/**
+    # Erzeugter Sprachcode (flutter gen-l10n), siehe docs/HANDOFF.md, „Sprachen“
+    - lib/l10n/app_localizations*.dart
 
 linter:
   # The lint rules applied to this project can be customized in the

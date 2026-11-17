@@ -26,3 +26,6 @@ android/key.properties
 # Von build_runner erzeugt (drift); siehe docs/HANDOFF.md
 *.g.dart
 test/generated/
+
+# Von flutter gen-l10n erzeugt (bei flutter pub get); siehe docs/HANDOFF.md
+lib/l10n/app_localizations*.dart

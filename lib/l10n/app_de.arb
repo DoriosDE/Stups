@@ -1,0 +1,73 @@
+{
+  "@@locale": "de",
+  "tabToday": "Heute",
+  "@tabToday": {
+    "description": "Name des ersten Tabs: der Tag mit dem nächsten Schritt"
+  },
+  "tabTasks": "Aufgaben",
+  "@tabTasks": {
+    "description": "Name des Tabs mit Inbox und Aufgabenliste"
+  },
+  "tabRoutines": "Routinen",
+  "@tabRoutines": {
+    "description": "Name des Tabs mit Routinen und Gewohnheiten"
+  },
+  "tabHousehold": "Haushalt",
+  "@tabHousehold": {
+    "description": "Name des Tabs mit Raumtagen und Vorrat"
+  },
+  "tabMore": "Mehr",
+  "@tabMore": {
+    "description": "Name des Tabs mit Rückblick, Einstellungen und Hilfe"
+  },
+  "todayHint": "Hier steht bald dein nächster Schritt.",
+  "@todayHint": {
+    "description": "Platzhaltertext auf „Heute“, bis der Tagesplan da ist"
+  },
+  "tasksHint": "Hier landen bald deine Aufgaben und die Inbox.",
+  "@tasksHint": {
+    "description": "Platzhaltertext auf „Aufgaben“, bis Inbox und Liste da sind"
+  },
+  "routinesHint": "Routinen und Gewohnheiten kommen in Version 0.2.",
+  "@routinesHint": {
+    "description": "Platzhaltertext auf „Routinen“"
+  },
+  "householdHint": "Der Haushalt kommt in Version 0.3.",
+  "@householdHint": {
+    "description": "Platzhaltertext auf „Haushalt“"
+  },
+  "moreHint": "Rückblick, Einstellungen und Hilfe folgen.",
+  "@moreHint": {
+    "description": "Platzhaltertext auf „Mehr“"
+  },
+  "appTitle": "Stups",
+  "@appTitle": {
+    "description": "Name der App, den Android zum Beispiel in der App-Übersicht anzeigt"
+  },
+  "captureTooltip": "Kopf frei machen",
+  "@captureTooltip": {
+    "description": "Hinweis am schwebenden Plus-Button zur Schnellerfassung"
+  },
+  "moreVersion": "Version {version}",
+  "@moreVersion": {
+    "description": "Versionsanzeige unter „Mehr“",
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "0.1.0"
+      }
+    }
+  },
+  "areaHousehold": "Haushalt",
+  "@areaHousehold": {
+    "description": "Anzeigename des eingebauten Bereichs „Haushalt“ (Kennung household)"
+  },
+  "areaWork": "Arbeit",
+  "@areaWork": {
+    "description": "Anzeigename des eingebauten Bereichs „Arbeit“ (Kennung work)"
+  },
+  "areaPersonal": "Persönliches",
+  "@areaPersonal": {
+    "description": "Anzeigename des eingebauten Bereichs „Persönliches“ (Kennung personal)"
+  }
+}

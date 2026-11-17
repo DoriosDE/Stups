@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/app_info/app_info_provider.dart';
+import '../../core/l10n/l10n.dart';
 import '../shell/placeholder_page.dart';
 
 class MoreScreen extends ConsumerWidget {
@@ -13,10 +14,10 @@ class MoreScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Expanded(
+        Expanded(
           child: PlaceholderPage(
-            title: 'Mehr',
-            hint: 'Rückblick, Einstellungen und Hilfe folgen.',
+            title: context.l10n.tabMore,
+            hint: context.l10n.moreHint,
           ),
         ),
         if (version != null)
@@ -25,7 +26,7 @@ class MoreScreen extends ConsumerWidget {
             // nicht verdeckt.
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 96),
             child: Text(
-              'Version $version',
+              context.l10n.moreVersion(version),
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),

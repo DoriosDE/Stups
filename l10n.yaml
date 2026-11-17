@@ -1,0 +1,5 @@
+# Sprachdateien (ARB) und erzeugter Code, siehe docs/HANDOFF.md, Abschnitt „Sprachen“.
+arb-dir: lib/l10n
+template-arb-file: app_de.arb
+output-localization-file: app_localizations.dart
+nullable-getter: false

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stups/core/app_info/app_info_provider.dart';
+import 'package:stups/core/l10n/l10n.dart';
 import 'package:stups/features/more/more_screen.dart';
 
 void main() {
@@ -19,7 +20,11 @@ void main() {
             ),
           ),
         ],
-        child: const MaterialApp(home: Scaffold(body: MoreScreen())),
+        child: const MaterialApp(
+          localizationsDelegates: appLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(body: MoreScreen()),
+        ),
       ),
     );
     await tester.pumpAndSettle();

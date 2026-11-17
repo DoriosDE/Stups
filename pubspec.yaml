@@ -44,6 +44,9 @@ dependencies:
   package_info_plus: ^10.2.2
   drift_flutter: ^0.3.1
   uuid: ^4.6.0
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -58,6 +61,9 @@ dev_dependencies:
   build_runner: ^2.17.1
 flutter:
   uses-material-design: true
+
+  # Erzeugt den Sprachcode aus lib/l10n/*.arb (siehe l10n.yaml).
+  generate: true
 
   # Lokale Builds und flutter run nutzen die Dev-App, damit die echte App
   # (prod) auf dem Gerät nicht überschrieben wird.
