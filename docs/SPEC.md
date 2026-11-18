@@ -258,8 +258,8 @@ Kern ist eine gemeinsame Task-Tabelle für alle Bereiche. Aufgaben (die Regel) s
 | --- | --- | --- |
 | Area | id, builtInKey (leer bei eigenen Bereichen), name (nur bei eigenen Bereichen), colorKey, iconKey, hidden | hat viele Tasks |
 | InboxItem | id, text, createdAt | wird zu Task oder Routine, oder gelöscht |
-| Task | id, areaId, roomId (optional), title, firstStep, note, estimateMin, priority (A, B, C), dueDate, recurrence (JSON), reminderAt, warnMin, active, createdAt | hat Subtasks und Occurrences |
-| Subtask | id, taskId, title, sortOrder | gehört zu Task |
+| Task | id, areaId, roomId (optional), title, note, estimateMin, priority (A, B, C), dueDate, recurrence (JSON), reminderAt, warnMin, active, createdAt | hat Subtasks und Occurrences |
+| Subtask | id, taskId, title, sortOrder | gehört zu Task; der erste Mini-Schritt ist der Subtask mit der kleinsten sortOrder, kein eigenes Feld |
 | Occurrence | id, taskId, date, status, startedAt, completedAt, actualMin | ein Tag einer Task, Basis für den Schätzabgleich |
 | SubtaskCheck | occurrenceId, subtaskId, done | Haken pro Tag |
 | DayPlan | date, energy, plannedTaskIds (JSON), reviewNote | Grundlage für „Heute“ |

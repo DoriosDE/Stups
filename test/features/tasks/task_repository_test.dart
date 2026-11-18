@@ -29,7 +29,7 @@ void main() {
         TaskDraft(
           title: 'Steuer machen',
           areaId: await areaId(BuiltInArea.work),
-          firstStep: 'Ordner aus dem Regal holen',
+          steps: [StepDraft('Ordner aus dem Regal holen')],
           estimateMin: 30,
           priority: Priority.a,
           dueDate: DateTime(2026, 12, 1),
@@ -41,7 +41,10 @@ void main() {
       final task = detail.task;
       expect(task.title, 'Steuer machen');
       expect(task.areaId, await areaId(BuiltInArea.work));
-      expect(task.firstStep, 'Ordner aus dem Regal holen');
+      expect(
+        [for (final step in detail.subtasks) step.title],
+        ['Ordner aus dem Regal holen'],
+      );
       expect(task.estimateMin, 30);
       expect(task.priority, Priority.a);
       expect(task.dueDate, '2026-12-01');
@@ -49,7 +52,6 @@ void main() {
         task.reminderAt!.isAtSameMomentAs(DateTime(2026, 11, 30, 9, 30)),
         isTrue,
       );
-      expect(detail.subtasks, isEmpty);
     },
   );
 
@@ -58,15 +60,19 @@ void main() {
       TaskDraft(
         title: '  Wäsche waschen \n',
         areaId: await areaId(BuiltInArea.household),
-        firstStep: '   ',
-        steps: ['  Wäsche sortieren ', '', '  \t', 'Maschine starten'],
+        steps: [
+          StepDraft('   '),
+          StepDraft('  Wäsche sortieren '),
+          StepDraft(''),
+          StepDraft('  \t'),
+          StepDraft('Maschine starten'),
+        ],
       ),
     );
 
     final detail = (await tasks.watchTask(id).first)!;
 
     expect(detail.task.title, 'Wäsche waschen');
-    expect(detail.task.firstStep, isNull);
     expect(
       [for (final step in detail.subtasks) step.title],
       ['Wäsche sortieren', 'Maschine starten'],
@@ -112,8 +118,11 @@ void main() {
         TaskDraft(
           title: 'Steuer machen',
           areaId: await areaId(BuiltInArea.work),
-          firstStep: 'Ordner holen',
-          steps: ['Belege sortieren', 'Formular ausfüllen'],
+          steps: [
+            StepDraft('Ordner holen'),
+            StepDraft('Belege sortieren'),
+            StepDraft('Formular ausfüllen'),
+          ],
           estimateMin: 30,
           priority: Priority.a,
           dueDate: DateTime(2026, 12, 1),
@@ -125,7 +134,7 @@ void main() {
         TaskDraft(
           title: 'Steuererklärung abgeben',
           areaId: await areaId(BuiltInArea.personal),
-          steps: ['Formular abschicken'],
+          steps: [StepDraft('Formular abschicken')],
         ),
       );
 
@@ -134,7 +143,6 @@ void main() {
       expect(task.id, id);
       expect(task.title, 'Steuererklärung abgeben');
       expect(task.areaId, await areaId(BuiltInArea.personal));
-      expect(task.firstStep, isNull);
       expect(task.estimateMin, isNull);
       expect(task.priority, Priority.b);
       expect(task.dueDate, isNull);
@@ -152,7 +160,7 @@ void main() {
       TaskDraft(
         title: 'Wäsche waschen',
         areaId: await areaId(BuiltInArea.household),
-        steps: ['Wäsche sortieren', 'Maschine starten'],
+        steps: [StepDraft('Wäsche sortieren'), StepDraft('Maschine starten')],
       ),
     );
     await tasks.complete(id, actualMin: 30);
@@ -173,7 +181,13 @@ void main() {
       TaskDraft(
         title: 'Wäsche waschen',
         areaId: await areaId(BuiltInArea.household),
-        steps: ['Wäsche nach Farbe sortieren', 'Maschine anstellen'],
+        steps: [
+          StepDraft.existing(
+            before.subtasks[0].id,
+            'Wäsche nach Farbe sortieren',
+          ),
+          StepDraft.existing(before.subtasks[1].id, 'Maschine anstellen'),
+        ],
       ),
     );
 
@@ -191,37 +205,102 @@ void main() {
     expect(checks.single.done, isTrue);
   });
 
-  test('beim Bearbeiten fallen überzählige Schritte weg und neue kommen '
-      'hinten dazu', () async {
-    final area = await areaId(BuiltInArea.household);
+  /// Aufgabe mit drei Schritten a, b, c, erledigt, mit einem Haken an c.
+  Future<({String taskId, List<Subtask> steps})>
+  taskWithCheckedLastStep() async {
     final id = await tasks.create(
-      TaskDraft(title: 'Wäsche waschen', areaId: area, steps: ['a', 'b', 'c']),
-    );
-    final original = (await tasks.watchTask(id).first)!.subtasks;
-
-    await tasks.update(
-      id,
-      TaskDraft(title: 'Wäsche waschen', areaId: area, steps: ['a', 'b']),
-    );
-    final fewer = (await tasks.watchTask(id).first)!.subtasks;
-    expect([for (final s in fewer) s.title], ['a', 'b']);
-    expect([for (final s in fewer) s.id], [original[0].id, original[1].id]);
-
-    await tasks.update(
-      id,
       TaskDraft(
         title: 'Wäsche waschen',
-        areaId: area,
-        steps: ['a', 'b', 'c2', 'd'],
+        areaId: await areaId(BuiltInArea.household),
+        steps: [StepDraft('a'), StepDraft('b'), StepDraft('c')],
       ),
     );
-    final more = (await tasks.watchTask(id).first)!.subtasks;
-    expect([for (final s in more) s.title], ['a', 'b', 'c2', 'd']);
-    expect(
-      [for (final s in more.take(2)) s.id],
-      [original[0].id, original[1].id],
+    await tasks.complete(id, actualMin: 30);
+    final detail = (await tasks.watchTask(id).first)!;
+    await db
+        .into(db.subtaskChecks)
+        .insert(
+          SubtaskChecksCompanion.insert(
+            occurrenceId: detail.occurrence!.id,
+            subtaskId: detail.subtasks[2].id,
+            done: true,
+          ),
+        );
+    return (taskId: id, steps: detail.subtasks);
+  }
+
+  test('ein gelöschter Schritt nimmt nur seine eigenen Haken mit', () async {
+    final (:taskId, :steps) = await taskWithCheckedLastStep();
+
+    // Der mittlere Schritt fällt weg; c rückt nach vorn.
+    await tasks.update(
+      taskId,
+      TaskDraft(
+        title: 'Wäsche waschen',
+        areaId: await areaId(BuiltInArea.household),
+        steps: [
+          StepDraft.existing(steps[0].id, 'a'),
+          StepDraft.existing(steps[2].id, 'c'),
+        ],
+      ),
     );
-    expect([for (final s in more) s.sortOrder], [0, 1, 2, 3]);
+
+    final after = (await tasks.watchTask(taskId).first)!.subtasks;
+    expect([for (final s in after) s.title], ['a', 'c']);
+    expect([for (final s in after) s.id], [steps[0].id, steps[2].id]);
+    expect([for (final s in after) s.sortOrder], [0, 1]);
+    final checks = await db.select(db.subtaskChecks).get();
+    expect(checks.single.subtaskId, steps[2].id);
+  });
+
+  test(
+    'die Reihenfolge der Liste gilt, die Haken bleiben an ihrem Schritt',
+    () async {
+      final (:taskId, :steps) = await taskWithCheckedLastStep();
+
+      await tasks.update(
+        taskId,
+        TaskDraft(
+          title: 'Wäsche waschen',
+          areaId: await areaId(BuiltInArea.household),
+          steps: [
+            StepDraft.existing(steps[2].id, 'c'),
+            StepDraft.existing(steps[0].id, 'a'),
+            StepDraft.existing(steps[1].id, 'b'),
+          ],
+        ),
+      );
+
+      final after = (await tasks.watchTask(taskId).first)!.subtasks;
+      expect([for (final s in after) s.title], ['c', 'a', 'b']);
+      expect([for (final s in after) s.sortOrder], [0, 1, 2]);
+      final checks = await db.select(db.subtaskChecks).get();
+      expect(checks.single.subtaskId, steps[2].id);
+    },
+  );
+
+  test('neue Schritte kommen dort dazu, wo sie in der Liste stehen', () async {
+    final (:taskId, :steps) = await taskWithCheckedLastStep();
+
+    await tasks.update(
+      taskId,
+      TaskDraft(
+        title: 'Wäsche waschen',
+        areaId: await areaId(BuiltInArea.household),
+        steps: [
+          StepDraft.existing(steps[0].id, 'a'),
+          StepDraft('neu'),
+          StepDraft.existing(steps[1].id, 'b'),
+          StepDraft.existing(steps[2].id, 'c'),
+        ],
+      ),
+    );
+
+    final after = (await tasks.watchTask(taskId).first)!.subtasks;
+    expect([for (final s in after) s.title], ['a', 'neu', 'b', 'c']);
+    expect(after[1].id, isNot(anyOf(steps.map((s) => s.id))));
+    final checks = await db.select(db.subtaskChecks).get();
+    expect(checks.single.subtaskId, steps[2].id);
   });
 
   test('die Liste zeigt alle Aufgaben oder nur die eines Bereichs', () async {
@@ -377,7 +456,11 @@ void main() {
       TaskDraft(
         title: 'Wäsche waschen',
         areaId: await areaId(BuiltInArea.household),
-        steps: ['Wäsche sortieren', 'Maschine starten', 'Wäsche aufhängen'],
+        steps: [
+          StepDraft('Wäsche sortieren'),
+          StepDraft('Maschine starten'),
+          StepDraft('Wäsche aufhängen'),
+        ],
       ),
     );
 

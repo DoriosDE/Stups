@@ -89,7 +89,7 @@ Der erste Befehl erzeugt `*.g.dart`, der zweite den Test-Helfer für den Schema-
 **Schema ändern:**
 
 1. `schemaVersion` in `AppDatabase` erhöhen und eine Migration in `migration` ergänzen.
-2. Neuen Schnappschuss schreiben: `dart run drift_dev schema dump lib/core/db/app_database.dart drift_schemas/`. Der alte Schnappschuss (`drift_schema_v1.json` und so weiter) bleibt im Git, er ist die Grundlage für Migrationstests.
+2. Neuen Schnappschuss schreiben: `dart run drift_dev schema dump lib/core/db/app_database.dart drift_schemas/`. Der alte Schnappschuss (`drift_schema_v1.json` und so weiter) bleibt im Git, er ist die Grundlage für Migrationstests. (Einmal, mit Ticket 04, wurde `drift_schema_v1.json` überschrieben und `schemaVersion` blieb 1, weil die App unveröffentlicht war. Ab der ersten Veröffentlichung gilt der Ablauf hier ohne Ausnahme.)
 3. Test-Helfer neu erzeugen (zweiter Befehl oben) und die Migration testen.
 
 Der Test `test/core/db/schema_snapshot_test.dart` schlägt fehl, wenn das Schema im Code vom Schnappschuss abweicht. Ändert man also eine Tabelle und vergisst Version oder Schnappschuss, fällt das sofort auf. Er vergleicht immer mit dem Schnappschuss der aktuellen `schemaVersion`, braucht also nach Schritt 1 und 2 keine Anpassung.

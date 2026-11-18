@@ -51,6 +51,12 @@ void main() {
   Future<List<Task>> savedTasks(WidgetTester tester, AppDatabase db) async =>
       (await tester.runAsync(() => db.select(db.tasks).get()))!;
 
+  /// Alle gespeicherten Schritte in der Reihenfolge der Liste.
+  Future<List<Subtask>> savedSteps(WidgetTester tester, AppDatabase db) async {
+    final steps = await tester.runAsync(() => db.select(db.subtasks).get());
+    return steps!..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+  }
+
   /// Scrollt das Formular, bis [target] auf dem Bildschirm liegt. Die Liste
   /// baut ihre Einträge erst, wenn sie in Reichweite scrollen; gebaut heißt
   /// aber noch nicht sichtbar.
@@ -155,6 +161,10 @@ void main() {
         find.widgetWithText(TextField, 'Was willst du erledigen?'),
         'Wäsche waschen',
       );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Was ist der allererste Mini-Schritt?'),
+        'Wäschekorb zur Maschine tragen',
+      );
       await tester.tap(find.text('Mehr Details'));
       await tester.pumpAndSettle();
       for (final step in ['Wäsche sortieren', 'Maschine starten']) {
@@ -170,13 +180,73 @@ void main() {
       await tester.pump();
       await tapSave(tester);
 
-      final steps = await tester.runAsync(() => db.select(db.subtasks).get());
-      expect(steps!.map((s) => s.title), [
+      // Der erste Mini-Schritt ist der erste Schritt der Liste.
+      expect((await savedSteps(tester, db)).map((s) => s.title), [
+        'Wäschekorb zur Maschine tragen',
         'Wäsche sortieren',
         'Maschine starten',
       ]);
     },
   );
+
+  testWidgets('beim Bearbeiten bleibt der Haken am Schritt, auch wenn ein '
+      'Schritt davor leer wird', (tester) async {
+    late String doneStepId;
+    final db = await pumpStupsApp(
+      tester,
+      seed: (db) async {
+        final repository = TaskRepository(db);
+        final personal = await (db.select(
+          db.areas,
+        )..where((a) => a.builtInKey.equals(BuiltInArea.personal))).getSingle();
+        final id = await repository.create(
+          TaskDraft(
+            title: 'Wäsche waschen',
+            areaId: personal.id,
+            steps: [StepDraft('a'), StepDraft('b'), StepDraft('c')],
+          ),
+        );
+        await repository.complete(id, actualMin: 30);
+        final detail = (await repository.watchTask(id).first)!;
+        doneStepId = detail.subtasks[2].id;
+        await db
+            .into(db.subtaskChecks)
+            .insert(
+              SubtaskChecksCompanion.insert(
+                occurrenceId: detail.occurrence!.id,
+                subtaskId: doneStepId,
+                done: true,
+              ),
+            );
+      },
+    );
+    await tester.tap(find.widgetWithText(NavigationDestination, 'Aufgaben'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Alle Aufgaben'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Wäsche waschen'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Bearbeiten'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mehr Details'));
+    await tester.pumpAndSettle();
+
+    // „b“ ist das erste Feld unter „Weiterer Schritt“; es wird geleert.
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Weiterer Schritt').first,
+      '',
+    );
+    await tester.pump();
+    await tapSave(tester);
+
+    final steps = await savedSteps(tester, db);
+    expect(steps.map((s) => s.title), ['a', 'c']);
+    expect(steps.last.id, doneStepId);
+    final checks = await tester.runAsync(
+      () => db.select(db.subtaskChecks).get(),
+    );
+    expect(checks!.single.subtaskId, doneStepId);
+  });
 
   testWidgets('Fälligkeit wird im Datumsdialog gewählt und gespeichert', (
     tester,
@@ -290,7 +360,9 @@ void main() {
     expect(find.byType(TextField), findsNothing);
     final task = (await savedTasks(tester, db)).single;
     expect(task.title, 'Wäsche waschen');
-    expect(task.firstStep, 'Wäschekorb zur Maschine tragen');
+    expect((await savedSteps(tester, db)).map((s) => s.title), [
+      'Wäschekorb zur Maschine tragen',
+    ]);
     expect(task.priority, Priority.b);
   });
 }

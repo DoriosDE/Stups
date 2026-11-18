@@ -23,11 +23,27 @@ class TaskFormScreen extends ConsumerStatefulWidget {
   ConsumerState<TaskFormScreen> createState() => _TaskFormScreenState();
 }
 
+/// Ein Schrittfeld im Formular. Bei einem bestehenden Schritt trägt es dessen
+/// [id], damit die Haken beim Speichern an ihm bleiben.
+class _StepField {
+  _StepField({this.id, String? text})
+    : controller = TextEditingController(text: text);
+
+  final String? id;
+  final TextEditingController controller;
+
+  StepDraft toDraft() => id == null
+      ? StepDraft(controller.text)
+      : StepDraft.existing(id!, controller.text);
+}
+
 class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
   late final TextEditingController _title;
-  late final TextEditingController _firstStep;
   late final TextEditingController _estimate;
-  late final List<TextEditingController> _steps;
+
+  /// Die Schritte der Aufgabe. Das erste Feld ist immer da: der allererste
+  /// Mini-Schritt, oben im Formular; die übrigen stehen unter „Mehr Details“.
+  late final List<_StepField> _steps;
   late Priority _priority;
   late DateTime? _dueDate;
   late DateTime? _reminderAt;
@@ -40,12 +56,12 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
     super.initState();
     final task = widget.initial?.task;
     _title = TextEditingController(text: task?.title);
-    _firstStep = TextEditingController(text: task?.firstStep);
     _estimate = TextEditingController(text: task?.estimateMin?.toString());
     _steps = [
       for (final step in widget.initial?.subtasks ?? const <Subtask>[])
-        TextEditingController(text: step.title),
+        _StepField(id: step.id, text: step.title),
     ];
+    if (_steps.isEmpty) _steps.add(_StepField());
     _priority = task?.priority ?? Priority.b;
     _dueDate = task?.dueDate == null ? null : DateTime.parse(task!.dueDate!);
     _reminderAt = task?.reminderAt;
@@ -55,10 +71,9 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
   @override
   void dispose() {
     _title.dispose();
-    _firstStep.dispose();
     _estimate.dispose();
     for (final step in _steps) {
-      step.dispose();
+      step.controller.dispose();
     }
     super.dispose();
   }
@@ -67,10 +82,9 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
     final draft = TaskDraft(
       title: _title.text,
       areaId: _selectedAreaId(areas)!,
-      firstStep: _firstStep.text,
       estimateMin: int.tryParse(_estimate.text),
       priority: _priority,
-      steps: [for (final step in _steps) step.text],
+      steps: [for (final step in _steps) step.toDraft()],
       dueDate: _dueDate,
       reminderAt: _reminderAt,
     );
@@ -154,7 +168,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
             ),
             const SizedBox(height: 16),
             TextField(
-              controller: _firstStep,
+              controller: _steps.first.controller,
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(labelText: l10n.taskFirstStepLabel),
             ),
@@ -173,10 +187,10 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                     labelText: l10n.taskEstimateLabel,
                   ),
                 ),
-                for (final step in _steps) ...[
+                for (final step in _steps.skip(1)) ...[
                   const SizedBox(height: 12),
                   TextField(
-                    controller: step,
+                    controller: step.controller,
                     textCapitalization: TextCapitalization.sentences,
                     decoration: InputDecoration(labelText: l10n.taskStepLabel),
                   ),
@@ -184,8 +198,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: TextButton.icon(
-                    onPressed: () =>
-                        setState(() => _steps.add(TextEditingController())),
+                    onPressed: () => setState(() => _steps.add(_StepField())),
                     icon: const Icon(Icons.add),
                     label: Text(l10n.taskAddStep),
                   ),

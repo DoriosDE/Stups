@@ -26,8 +26,11 @@ void main() {
           TaskDraft(
             title: 'Steuer machen',
             areaId: await areaId(db, BuiltInArea.work),
-            firstStep: 'Ordner aus dem Regal holen',
-            steps: ['Belege sortieren', 'Formular ausfüllen'],
+            steps: [
+              StepDraft('Ordner aus dem Regal holen'),
+              StepDraft('Belege sortieren'),
+              StepDraft('Formular ausfüllen'),
+            ],
             estimateMin: estimateMin,
             priority: Priority.a,
             dueDate: DateTime(2026, 12, 1),

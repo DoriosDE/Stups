@@ -2,12 +2,27 @@ import 'package:drift/drift.dart';
 
 import '../../core/db/app_database.dart';
 
+/// Ein Schritt einer Aufgabe beim Anlegen oder Bearbeiten.
+///
+/// Der erste Schritt der Liste ist der „allererste Mini-Schritt“; es gibt kein
+/// Sonderfeld dafür. Ein bestehender Schritt trägt seine [id], damit seine
+/// Haken beim Bearbeiten an ihm bleiben und nicht am Text oder an der Position.
+class StepDraft {
+  /// Ein neuer Schritt.
+  const StepDraft(this.title) : id = null;
+
+  /// Ein Schritt, den es schon gibt.
+  const StepDraft.existing(String this.id, this.title);
+
+  final String? id;
+  final String title;
+}
+
 /// Was man beim Anlegen oder Bearbeiten einer Aufgabe angibt.
 class TaskDraft {
   const TaskDraft({
     required this.title,
     required this.areaId,
-    this.firstStep,
     this.steps = const [],
     this.estimateMin,
     this.priority = Priority.b,
@@ -17,10 +32,10 @@ class TaskDraft {
 
   final String title;
   final String areaId;
-  final String? firstStep;
 
-  /// Weitere Unterschritte nach dem ersten, in dieser Reihenfolge.
-  final List<String> steps;
+  /// Die Schritte in ihrer Reihenfolge; der erste ist der allererste
+  /// Mini-Schritt.
+  final List<StepDraft> steps;
   final int? estimateMin;
   final Priority priority;
 
@@ -36,16 +51,15 @@ class TaskDraft {
     if (cleanTitle.isEmpty) {
       throw ArgumentError.value(title, 'title', 'darf nicht leer sein');
     }
-    final cleanFirstStep = firstStep?.trim();
     return TaskDraft(
       title: cleanTitle,
       areaId: areaId,
-      firstStep: cleanFirstStep == null || cleanFirstStep.isEmpty
-          ? null
-          : cleanFirstStep,
       steps: [
         for (final step in steps)
-          if (step.trim().isNotEmpty) step.trim(),
+          if (step.title.trim().isNotEmpty)
+            step.id == null
+                ? StepDraft(step.title.trim())
+                : StepDraft.existing(step.id!, step.title.trim()),
       ],
       estimateMin: estimateMin != null && estimateMin! > 0 ? estimateMin : null,
       priority: priority,
@@ -94,7 +108,6 @@ class TaskRepository {
             TasksCompanion.insert(
               areaId: draft.areaId,
               title: draft.title,
-              firstStep: Value(draft.firstStep),
               estimateMin: Value(draft.estimateMin),
               priority: Value(draft.priority),
               dueDate: Value(_dayText(draft.dueDate)),
@@ -114,7 +127,6 @@ class TaskRepository {
         TasksCompanion(
           areaId: Value(draft.areaId),
           title: Value(draft.title),
-          firstStep: Value(draft.firstStep),
           estimateMin: Value(draft.estimateMin),
           priority: Value(draft.priority),
           dueDate: Value(_dayText(draft.dueDate)),
@@ -125,36 +137,42 @@ class TaskRepository {
     });
   }
 
-  /// Gleicht die Schritte mit [steps] ab, und zwar nach Position: Die ersten
-  /// behalten ihre Zeile (und damit ihre Haken), neue kommen hinten dazu,
-  /// überzählige fallen weg (samt ihren Haken).
-  Future<void> _syncSteps(String taskId, List<String> steps) async {
-    final existing =
-        await (_db.select(_db.subtasks)
-              ..where((s) => s.taskId.equals(taskId))
-              ..orderBy([(s) => OrderingTerm.asc(s.sortOrder)]))
-            .get();
-    for (final (index, step) in steps.indexed) {
-      if (index < existing.length) {
-        await (_db.update(
+  /// Gleicht die Schritte der Aufgabe mit [steps] ab, und zwar über die ID:
+  /// Bestehende Schritte behalten ihre Zeile (und damit ihre Haken) und
+  /// bekommen Text und Platz aus der Liste, neue werden angelegt, und Schritte,
+  /// die nicht mehr in der Liste stehen, fallen mit ihren Haken weg.
+  Future<void> _syncSteps(String taskId, List<StepDraft> steps) async {
+    final existing = await (_db.select(
+      _db.subtasks,
+    )..where((s) => s.taskId.equals(taskId))).get();
+    final existingIds = {for (final step in existing) step.id};
+    final keptIds = {
+      for (final step in steps)
+        if (step.id != null && existingIds.contains(step.id)) step.id!,
+    };
+    for (final step in existing) {
+      if (!keptIds.contains(step.id)) {
+        await (_db.delete(
           _db.subtasks,
-        )..where((s) => s.id.equals(existing[index].id))).write(
-          SubtasksCompanion(title: Value(step), sortOrder: Value(index)),
-        );
-      } else {
-        await _insertStep(taskId, index, step);
+        )..where((s) => s.id.equals(step.id))).go();
       }
     }
-    for (final surplus in existing.skip(steps.length)) {
-      await (_db.delete(
-        _db.subtasks,
-      )..where((s) => s.id.equals(surplus.id))).go();
+    for (final (index, step) in steps.indexed) {
+      if (keptIds.contains(step.id)) {
+        await (_db.update(
+          _db.subtasks,
+        )..where((s) => s.id.equals(step.id!))).write(
+          SubtasksCompanion(title: Value(step.title), sortOrder: Value(index)),
+        );
+      } else {
+        await _insertStep(taskId, index, step.title);
+      }
     }
   }
 
-  Future<void> _insertSteps(String taskId, List<String> steps) async {
+  Future<void> _insertSteps(String taskId, List<StepDraft> steps) async {
     for (final (index, step) in steps.indexed) {
-      await _insertStep(taskId, index, step);
+      await _insertStep(taskId, index, step.title);
     }
   }
 

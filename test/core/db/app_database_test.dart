@@ -44,7 +44,6 @@ void main() {
             ),
           ),
         );
-        expect(task.firstStep, isNull);
         expect(task.dueDate, isNull);
         expect(task.recurrence, isNull);
       },

@@ -66,6 +66,9 @@ class _TaskBody extends ConsumerWidget {
     final theme = Theme.of(context);
     final material = MaterialLocalizations.of(context);
     final task = detail.task;
+    // Der erste Schritt ist der allererste Mini-Schritt, die übrigen folgen.
+    final firstStep = detail.subtasks.firstOrNull;
+    final laterSteps = detail.subtasks.skip(1);
     final due = task.dueDate == null ? null : DateTime.parse(task.dueDate!);
     final reminder = task.reminderAt;
     return ListView(
@@ -85,7 +88,7 @@ class _TaskBody extends ConsumerWidget {
         ),
         const SizedBox(height: 12),
         Text(task.title, style: theme.textTheme.headlineSmall),
-        if (task.firstStep != null) ...[
+        if (firstStep != null) ...[
           const SizedBox(height: 16),
           Card(
             color: theme.colorScheme.secondaryContainer,
@@ -99,16 +102,16 @@ class _TaskBody extends ConsumerWidget {
                     style: theme.textTheme.labelLarge,
                   ),
                   const SizedBox(height: 4),
-                  Text(task.firstStep!, style: theme.textTheme.bodyLarge),
+                  Text(firstStep.title, style: theme.textTheme.bodyLarge),
                 ],
               ),
             ),
           ),
         ],
-        if (detail.subtasks.isNotEmpty) ...[
+        if (laterSteps.isNotEmpty) ...[
           const SizedBox(height: 16),
           Text(l10n.taskNextSteps, style: theme.textTheme.labelLarge),
-          for (final step in detail.subtasks)
+          for (final step in laterSteps)
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.radio_button_unchecked),

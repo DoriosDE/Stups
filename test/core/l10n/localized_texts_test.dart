@@ -166,8 +166,7 @@ void main() {
         TaskDraft(
           title: 'Steuer machen',
           areaId: work.id,
-          firstStep: 'Ordner holen',
-          steps: ['Belege sortieren'],
+          steps: [StepDraft('Ordner holen'), StepDraft('Belege sortieren')],
           estimateMin: 30,
           priority: Priority.a,
           dueDate: DateTime(2026, 12, 1),
