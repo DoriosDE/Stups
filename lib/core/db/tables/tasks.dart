@@ -14,7 +14,6 @@ class Tasks extends Table {
   /// Verweis auf einen Raum (Haushalt, ab v0.3); die Tabelle gibt es noch nicht.
   TextColumn get roomId => text().nullable()();
   TextColumn get title => text()();
-  TextColumn get firstStep => text().nullable()();
   TextColumn get note => text().nullable()();
   IntColumn get estimateMin => integer().nullable()();
   TextColumn get priority =>

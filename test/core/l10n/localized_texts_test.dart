@@ -1,6 +1,7 @@
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stups/app.dart';
@@ -11,6 +12,7 @@ import 'package:stups/core/router/app_router.dart';
 import 'package:stups/core/theme/app_theme.dart';
 import 'package:stups/features/inbox/inbox_repository.dart';
 import 'package:stups/features/shell/placeholder_page.dart';
+import 'package:stups/features/tasks/task_repository.dart';
 import 'package:stups/features/tasks/tasks_screen.dart';
 
 import '../../support/marker_localizations.dart';
@@ -24,6 +26,7 @@ void main() {
     String? location,
     String version = '0.0.0-test',
     List<String> thoughts = const [],
+    Future<void> Function(AppDatabase db)? seed,
   }) async {
     final router = createRouter(initialLocation: location ?? AppRoutes.today);
     addTearDown(router.dispose);
@@ -40,6 +43,7 @@ void main() {
       for (final thought in thoughts) {
         await InboxRepository(db).add(thought);
       }
+      if (seed != null) await seed(db);
     });
     await tester.pumpWidget(
       ProviderScope(
@@ -150,6 +154,182 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(marker('inboxTaskCreated')), findsOneWidget);
+    });
+  });
+
+  group('Aufgaben', () {
+    Future<void> seedTask(AppDatabase db) async {
+      final work = await (db.select(
+        db.areas,
+      )..where((a) => a.builtInKey.equals(BuiltInArea.work))).getSingle();
+      await TaskRepository(db).create(
+        TaskDraft(
+          title: 'Steuer machen',
+          areaId: work.id,
+          steps: [StepDraft('Ordner holen'), StepDraft('Belege sortieren')],
+          estimateMin: 30,
+          priority: Priority.a,
+          dueDate: DateTime(2026, 12, 1),
+          reminderAt: DateTime(2026, 11, 30, 9),
+        ),
+      );
+    }
+
+    /// Markiert, welche Texte sichtbar sein müssen.
+    void expectMarkers(Iterable<String> texts) {
+      for (final text in texts) {
+        expect(
+          find.text(text),
+          findsOneWidget,
+          reason: 'Text "$text" zeigt seinen Marker nicht',
+        );
+      }
+    }
+
+    testWidgets('der Tab zeigt Umschalter, Knopf und die leere Liste mit '
+        'Texten aus den Sprachdateien', (tester) async {
+      await pumpApp(tester, location: AppRoutes.tasks);
+
+      expectMarkers([
+        marker('tasksTabInbox', '0'),
+        marker('tasksTabAll'),
+        marker('taskNew'),
+      ]);
+
+      await tester.tap(find.text(marker('tasksTabAll')));
+      await tester.pumpAndSettle();
+
+      expectMarkers([
+        marker('tasksEmpty'),
+        marker('tasksAreaAll'),
+        marker('areaHousehold'),
+        marker('areaWork'),
+        marker('areaPersonal'),
+      ]);
+    });
+
+    testWidgets('die Liste zeigt Bereich und Dauer mit Texten aus den '
+        'Sprachdateien', (tester) async {
+      await pumpApp(tester, location: AppRoutes.tasks, seed: seedTask);
+
+      await tester.tap(find.text(marker('tasksTabAll')));
+      await tester.pumpAndSettle();
+
+      expectMarkers(['${marker('areaWork')} · ${marker('taskMinutes', '30')}']);
+    });
+
+    testWidgets('das Formular trägt Texte aus den Sprachdateien', (
+      tester,
+    ) async {
+      // Hoch genug, damit die Liste alle Felder baut.
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await pumpApp(tester, location: AppRoutes.newTask);
+
+      expectMarkers([
+        marker('taskNew'),
+        marker('taskTitleLabel'),
+        marker('taskFirstStepLabel'),
+        marker('taskMoreDetails'),
+        marker('taskSave'),
+      ]);
+
+      await tester.tap(find.text(marker('taskMoreDetails')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(marker('taskAddStep')));
+      await tester.pumpAndSettle();
+
+      expectMarkers([
+        marker('taskEstimateLabel'),
+        marker('taskStepLabel'),
+        marker('taskPriorityLabel'),
+        marker('taskAreaLabel'),
+        marker('areaHousehold'),
+        marker('areaWork'),
+        marker('areaPersonal'),
+        marker('taskDueLabel'),
+        marker('taskReminderLabel'),
+      ]);
+      expect(find.text(marker('taskNotSet')), findsNWidgets(2));
+    });
+
+    testWidgets('das Formular zum Bearbeiten trägt seine Überschrift aus den '
+        'Sprachdateien', (tester) async {
+      late String id;
+      await pumpApp(
+        tester,
+        seed: (db) async {
+          await seedTask(db);
+          id = (await db.select(db.tasks).getSingle()).id;
+        },
+      );
+      final router = GoRouter.of(tester.element(find.byType(Scaffold).first));
+      router.push(AppRoutes.editTaskPath(id));
+      await tester.pumpAndSettle();
+
+      expectMarkers([marker('taskEditTitle')]);
+    });
+
+    testWidgets('die Detailansicht trägt Texte aus den Sprachdateien', (
+      tester,
+    ) async {
+      late String id;
+      await pumpApp(
+        tester,
+        seed: (db) async {
+          await seedTask(db);
+          id = (await db.select(db.tasks).getSingle()).id;
+        },
+      );
+      final router = GoRouter.of(tester.element(find.byType(Scaffold).first));
+      router.push(AppRoutes.taskPath(id));
+      await tester.pumpAndSettle();
+
+      expectMarkers([
+        marker('areaWork'),
+        marker('taskPriorityValue', 'A'),
+        marker('taskEstimateAbout', '30'),
+        marker('taskFirstStepHeading'),
+        marker('taskNextSteps'),
+        marker('taskDone'),
+      ]);
+      expect(find.byTooltip(marker('taskEdit')), findsOneWidget);
+      expect(find.textContaining('⟦taskDueOn:'), findsOneWidget);
+      expect(find.textContaining('⟦taskReminderAt:'), findsOneWidget);
+    });
+
+    testWidgets('Erledigen fragt und vergleicht mit Texten aus den '
+        'Sprachdateien', (tester) async {
+      late String id;
+      await pumpApp(
+        tester,
+        seed: (db) async {
+          await seedTask(db);
+          id = (await db.select(db.tasks).getSingle()).id;
+        },
+      );
+      final router = GoRouter.of(tester.element(find.byType(Scaffold).first));
+      router.push(AppRoutes.taskPath(id));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(marker('taskDone')));
+      await tester.pumpAndSettle();
+      expectMarkers([
+        marker('taskDoneAskTitle'),
+        marker('taskDoneMinutesLabel'),
+        marker('taskDoneConfirm'),
+      ]);
+
+      await tester.enterText(find.byType(TextField), '14');
+      await tester.pump();
+      await tester.tap(find.text(marker('taskDoneConfirm')));
+      await tester.pumpAndSettle();
+
+      expectMarkers([
+        marker('taskDoneTitle'),
+        marker('taskComparison', '30,14'),
+      ]);
     });
   });
 

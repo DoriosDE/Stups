@@ -64,6 +64,28 @@
   "@captureSaved": {
     "description": "Kurze Meldung, nachdem ein Gedanke in die Inbox gespeichert wurde"
   },
+  "tasksTabInbox": "Inbox ({count})",
+  "@tasksTabInbox": {
+    "description": "Umschalter im Tab „Aufgaben“ für die Inbox, mit der Zahl der wartenden Gedanken",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "tasksTabAll": "Alle Aufgaben",
+  "@tasksTabAll": {
+    "description": "Umschalter im Tab „Aufgaben“ für die Liste aller Aufgaben"
+  },
+  "tasksEmpty": "Noch keine Aufgaben. Mit „Neue Aufgabe“ legst du die erste an.",
+  "@tasksEmpty": {
+    "description": "Hinweis in der leeren Aufgabenliste; „Neue Aufgabe“ ist der Knopf darüber"
+  },
+  "tasksAreaAll": "Alle",
+  "@tasksAreaAll": {
+    "description": "Auswahl in der Aufgabenliste, die Aufgaben aus allen Bereichen zeigt"
+  },
   "inboxEmptyTitle": "Inbox leer",
   "@inboxEmptyTitle": {
     "description": "Überschrift der Inbox, wenn kein Gedanke wartet"
@@ -93,6 +115,172 @@
         "example": "Mama zurückrufen"
       }
     }
+  },
+  "taskNew": "Neue Aufgabe",
+  "@taskNew": {
+    "description": "Knopf im Tab „Aufgaben“ und Überschrift des Formulars für eine neue Aufgabe"
+  },
+  "taskTitleLabel": "Was willst du erledigen?",
+  "@taskTitleLabel": {
+    "description": "Beschriftung des Titelfelds im Aufgabenformular"
+  },
+  "taskFirstStepLabel": "Was ist der allererste Mini-Schritt?",
+  "@taskFirstStepLabel": {
+    "description": "Beschriftung des Felds für den ersten Mini-Schritt; der Schritt soll so klein sein, dass der Einstieg leichtfällt"
+  },
+  "taskMoreDetails": "Mehr Details",
+  "@taskMoreDetails": {
+    "description": "Eingeklappter Bereich im Aufgabenformular mit den optionalen Feldern"
+  },
+  "taskEstimateLabel": "Geschätzte Dauer in Minuten",
+  "@taskEstimateLabel": {
+    "description": "Beschriftung des Felds für die geschätzte Dauer einer Aufgabe"
+  },
+  "taskPriorityLabel": "Priorität",
+  "@taskPriorityLabel": {
+    "description": "Beschriftung der Auswahl A, B oder C für die Priorität einer Aufgabe"
+  },
+  "taskAreaLabel": "Bereich",
+  "@taskAreaLabel": {
+    "description": "Beschriftung der Auswahl des Bereichs einer Aufgabe"
+  },
+  "taskStepLabel": "Weiterer Schritt",
+  "@taskStepLabel": {
+    "description": "Beschriftung eines Felds für einen weiteren Unterschritt nach dem ersten Mini-Schritt"
+  },
+  "taskAddStep": "Schritt hinzufügen",
+  "@taskAddStep": {
+    "description": "Knopf im Aufgabenformular, der ein weiteres Feld für einen Unterschritt öffnet"
+  },
+  "taskDueLabel": "Fällig am",
+  "@taskDueLabel": {
+    "description": "Beschriftung der Auswahl des Fälligkeitsdatums einer Aufgabe"
+  },
+  "taskReminderLabel": "Erinnerung",
+  "@taskReminderLabel": {
+    "description": "Beschriftung der Auswahl von Tag und Uhrzeit für den Stupser einer Aufgabe"
+  },
+  "taskNotSet": "Nicht gesetzt",
+  "@taskNotSet": {
+    "description": "Anzeige unter einem optionalen Feld im Aufgabenformular, solange nichts gewählt ist"
+  },
+  "taskClear": "Entfernen",
+  "@taskClear": {
+    "description": "Hinweis am Knopf, der ein gewähltes Datum oder eine Uhrzeit wieder entfernt"
+  },
+  "taskMinutes": "{count} Min.",
+  "@taskMinutes": {
+    "description": "Kurze Dauerangabe in der Aufgabenliste",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "taskPriorityValue": "Priorität {priority}",
+  "@taskPriorityValue": {
+    "description": "Priorität einer Aufgabe in der Detailansicht; der Buchstabe A, B oder C steht dahinter",
+    "placeholders": {
+      "priority": {
+        "type": "String",
+        "example": "A"
+      }
+    }
+  },
+  "taskEstimateAbout": "Etwa {count} Minuten",
+  "@taskEstimateAbout": {
+    "description": "Geschätzte Dauer einer Aufgabe in der Detailansicht",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "taskFirstStepHeading": "Erster Mini-Schritt",
+  "@taskFirstStepHeading": {
+    "description": "Überschrift über dem ersten Mini-Schritt einer Aufgabe"
+  },
+  "taskNextSteps": "Danach",
+  "@taskNextSteps": {
+    "description": "Überschrift über den weiteren Schritten einer Aufgabe nach dem ersten"
+  },
+  "taskDueOn": "Fällig am {date}",
+  "@taskDueOn": {
+    "description": "Fälligkeitsdatum in der Detailansicht",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Di., 1. Dez."
+      }
+    }
+  },
+  "taskReminderAt": "Erinnerung: {when}",
+  "@taskReminderAt": {
+    "description": "Zeitpunkt der Erinnerung in der Detailansicht",
+    "placeholders": {
+      "when": {
+        "type": "String",
+        "example": "Mo., 30. Nov., 09:00"
+      }
+    }
+  },
+  "taskDone": "Erledigt",
+  "@taskDone": {
+    "description": "Knopf in der Detailansicht, der die Aufgabe als erledigt festhält"
+  },
+  "taskDoneAskTitle": "Wie viele Minuten hast du gebraucht?",
+  "@taskDoneAskTitle": {
+    "description": "Frage im Blatt, das nach dem Erledigen die tatsächliche Dauer erfragt"
+  },
+  "taskDoneMinutesLabel": "Minuten",
+  "@taskDoneMinutesLabel": {
+    "description": "Beschriftung des Zahlenfelds für die tatsächliche Dauer"
+  },
+  "taskDoneConfirm": "Fertig",
+  "@taskDoneConfirm": {
+    "description": "Knopf im Blatt, der die tatsächliche Dauer bestätigt und die Aufgabe als erledigt speichert"
+  },
+  "taskDoneTitle": "Geschafft!",
+  "@taskDoneTitle": {
+    "description": "Überschrift der Karte, die eine erledigte Aufgabe in der Detailansicht zeigt"
+  },
+  "taskComparison": "Geschätzt {estimate} Min., gebraucht {actual} Min.",
+  "@taskComparison": {
+    "description": "Vergleich von geschätzter und tatsächlicher Dauer, ohne Bewertung",
+    "placeholders": {
+      "estimate": {
+        "type": "int",
+        "example": "10"
+      },
+      "actual": {
+        "type": "int",
+        "example": "14"
+      }
+    }
+  },
+  "taskActualOnly": "Gebraucht: {actual} Min.",
+  "@taskActualOnly": {
+    "description": "Tatsächliche Dauer einer erledigten Aufgabe, für die es keine Schätzung gab",
+    "placeholders": {
+      "actual": {
+        "type": "int",
+        "example": "14"
+      }
+    }
+  },
+  "taskEdit": "Bearbeiten",
+  "@taskEdit": {
+    "description": "Hinweis am Knopf in der Detailansicht, der das Formular zum Bearbeiten der Aufgabe öffnet"
+  },
+  "taskEditTitle": "Aufgabe bearbeiten",
+  "@taskEditTitle": {
+    "description": "Überschrift des Aufgabenformulars, wenn eine bestehende Aufgabe bearbeitet wird"
+  },
+  "taskSave": "Speichern",
+  "@taskSave": {
+    "description": "Knopf im Aufgabenformular, der die Aufgabe speichert"
   },
   "moreVersion": "Version {version}",
   "@moreVersion": {

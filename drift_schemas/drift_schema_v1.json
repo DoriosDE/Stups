@@ -131,7 +131,7 @@
             "nullable": false,
             "customConstraints": null,
             "default_dart": null,
-            "default_client_dart": "() => DateTime.now().toUtc()",
+            "default_client_dart": "nowUtc",
             "dsl_features": []
           }
         ],
@@ -204,16 +204,6 @@
             "getter_name": "title",
             "moor_type": "string",
             "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "first_step",
-            "getter_name": "firstStep",
-            "moor_type": "string",
-            "nullable": true,
             "customConstraints": null,
             "default_dart": null,
             "default_client_dart": null,
@@ -314,7 +304,7 @@
             "nullable": false,
             "customConstraints": null,
             "default_dart": null,
-            "default_client_dart": "() => DateTime.now().toUtc()",
+            "default_client_dart": "nowUtc",
             "dsl_features": []
           }
         ],
@@ -707,7 +697,7 @@
             "nullable": false,
             "customConstraints": null,
             "default_dart": null,
-            "default_client_dart": "() => DateTime.now().toUtc()",
+            "default_client_dart": "nowUtc",
             "dsl_features": []
           },
           {
@@ -807,7 +797,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"tasks\" (\"id\" TEXT NOT NULL, \"area_id\" TEXT NOT NULL REFERENCES areas (id) ON DELETE RESTRICT, \"room_id\" TEXT NULL, \"title\" TEXT NOT NULL, \"first_step\" TEXT NULL, \"note\" TEXT NULL, \"estimate_min\" INTEGER NULL, \"priority\" TEXT NOT NULL DEFAULT 'b', \"due_date\" TEXT NULL, \"recurrence\" TEXT NULL, \"reminder_at\" INTEGER NULL, \"warn_min\" INTEGER NULL, \"active\" INTEGER NOT NULL DEFAULT 1 CHECK (\"active\" IN (0, 1)), \"created_at\" INTEGER NOT NULL, PRIMARY KEY (\"id\"), CHECK (due_date IS NULL OR due_date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"tasks\" (\"id\" TEXT NOT NULL, \"area_id\" TEXT NOT NULL REFERENCES areas (id) ON DELETE RESTRICT, \"room_id\" TEXT NULL, \"title\" TEXT NOT NULL, \"note\" TEXT NULL, \"estimate_min\" INTEGER NULL, \"priority\" TEXT NOT NULL DEFAULT 'b', \"due_date\" TEXT NULL, \"recurrence\" TEXT NULL, \"reminder_at\" INTEGER NULL, \"warn_min\" INTEGER NULL, \"active\" INTEGER NOT NULL DEFAULT 1 CHECK (\"active\" IN (0, 1)), \"created_at\" INTEGER NOT NULL, PRIMARY KEY (\"id\"), CHECK (due_date IS NULL OR due_date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'));"
         }
       ]
     },

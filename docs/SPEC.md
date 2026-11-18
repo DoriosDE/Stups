@@ -142,7 +142,7 @@ Alle Bereiche speisen ein gemeinsames Aufgabensystem, damit es nur eine Stelle g
 ### Aufgaben
 
 - Felder: Titel, erster Mini-Schritt, weitere Unterschritte, geschätzte Dauer, Priorität A, B oder C, Bereich, optional Fälligkeit und Erinnerung
-- Beim Anlegen fragt die App: „Was ist der allererste Mini-Schritt?“ Ein Vorschlag aus Vorlagen ist vorausgefüllt.
+- Beim Anlegen fragt die App: „Was ist der allererste Mini-Schritt?“ Das Feld bleibt leer, es gibt keine Vorschläge.
 - Nach dem Erledigen speichert die App die tatsächliche Dauer und zeigt den Vergleich zur Schätzung, ohne Bewertung
 - Bereiche: Haushalt, Arbeit, Persönliches, frei ergänzbar. Die eingebauten Bereiche tragen keinen Text in der Datenbank (nur eine Kennung wie `household`); ihr Name kommt aus den Sprachdateien. Sie lassen sich ein- und ausblenden, aber nicht umbenennen oder löschen; eigene Bereiche sind frei benennbar.
 
@@ -258,8 +258,8 @@ Kern ist eine gemeinsame Task-Tabelle für alle Bereiche. Aufgaben (die Regel) s
 | --- | --- | --- |
 | Area | id, builtInKey (leer bei eigenen Bereichen), name (nur bei eigenen Bereichen), colorKey, iconKey, hidden | hat viele Tasks |
 | InboxItem | id, text, createdAt | wird zu Task oder Routine, oder gelöscht |
-| Task | id, areaId, roomId (optional), title, firstStep, note, estimateMin, priority (A, B, C), dueDate, recurrence (JSON), reminderAt, warnMin, active, createdAt | hat Subtasks und Occurrences |
-| Subtask | id, taskId, title, sortOrder | gehört zu Task |
+| Task | id, areaId, roomId (optional), title, note, estimateMin, priority (A, B, C), dueDate, recurrence (JSON), reminderAt, warnMin, active, createdAt | hat Subtasks und Occurrences |
+| Subtask | id, taskId, title, sortOrder | gehört zu Task; der erste Mini-Schritt ist der Subtask mit der kleinsten sortOrder, kein eigenes Feld |
 | Occurrence | id, taskId, date, status, startedAt, completedAt, actualMin | ein Tag einer Task, Basis für den Schätzabgleich |
 | SubtaskCheck | occurrenceId, subtaskId, done | Haken pro Tag |
 | DayPlan | date, energy, plannedTaskIds (JSON), reviewNote | Grundlage für „Heute“ |
@@ -274,7 +274,7 @@ Kern ist eine gemeinsame Task-Tabelle für alle Bereiche. Aufgaben (die Regel) s
 
 Die „Taten“ sind keine eigene Tabelle, sondern werden aus den erledigten Occurrences berechnet. `Task.recurrence` und `Occurrence` sind von Anfang an im Schema. In v0.1 gibt es nur einmalige Aufgaben mit genau einer Occurrence; die Wiederholungs-Engine folgt mit Routinen (v0.2) und Haushalt (v0.3). Alle IDs sind UUIDs als Text.
 
-Vorlagen (Routinen, Raumpakete, Challenges, Vorratsliste, Vorschläge für erste Mini-Schritte) liegen als JSON-Dateien in den App-Assets. Das Backup-Format ist ein JSON-Abbild aller Tabellen plus `schemaVersion`.
+Vorlagen (Routinen, Raumpakete, Challenges, Vorratsliste) liegen als JSON-Dateien in den App-Assets. Das Backup-Format ist ein JSON-Abbild aller Tabellen plus `schemaVersion`.
 
 ## Design
 
