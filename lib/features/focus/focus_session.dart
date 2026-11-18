@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import '../../core/db/day_key.dart';
-
 /// Eine laufende Fokus-Sitzung zu einer Aufgabe.
 ///
 /// Der Countdown beruht auf dem gespeicherten Endzeitpunkt [endsAt]. Die
@@ -88,17 +86,24 @@ class FocusSession {
   }
 
   /// Die gebrauchte Zeit seit dem Start in vollen Minuten (aufgerundet,
-  /// mindestens eine); damit wird die Dauer beim Erledigen vorbelegt.
+  /// mindestens eine); damit wird die Dauer beim Erledigen vorbelegt. Sie endet
+  /// mit dem Countdown: Wer erst später auf „Fertig“ tippt, bekommt die Zeit
+  /// danach nicht angerechnet.
   int elapsedMinutes(DateTime now) {
-    final micros = now.toUtc().difference(startedAt).inMicroseconds;
+    final utc = now.toUtc();
+    final end = utc.isBefore(endsAt) ? utc : endsAt;
+    final micros = end.difference(startedAt).inMicroseconds;
     final minutes = (micros / Duration.microsecondsPerMinute).ceil();
     return minutes < 1 ? 1 : minutes;
   }
 
-  /// Ob die Sitzung am Kalendertag von [now] (Ortszeit) begann. Eine Sitzung
-  /// von gestern gilt als vergessen und stört nicht.
-  bool isFromDay(DateTime now) =>
-      dayKey(startedAt.toLocal()) == dayKey(now.toLocal());
+  /// So lange nach dem Ende bleibt eine Sitzung erreichbar. Danach gilt sie als
+  /// vergessen und stört nicht mehr.
+  static const staleAfter = Duration(hours: 6);
+
+  /// Ob die Sitzung vergessen ist: Ihr Ende liegt mindestens [staleAfter]
+  /// zurück. Eine laufende Sitzung ist es nie, auch nicht über Mitternacht.
+  bool isStale(DateTime now) => !now.toUtc().isBefore(endsAt.add(staleAfter));
 
   String toJson() => jsonEncode({
     'taskId': taskId,

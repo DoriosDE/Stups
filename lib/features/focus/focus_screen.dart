@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../core/clock/clock_provider.dart';
 import '../../core/db/app_database.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/router/app_router.dart';
@@ -13,7 +14,6 @@ import '../tasks/actual_minutes_sheet.dart';
 import '../tasks/task_providers.dart';
 import '../tasks/task_repository.dart';
 import '../today/celebration.dart';
-import '../today/today_providers.dart';
 import 'focus_providers.dart';
 import 'focus_session.dart';
 
@@ -165,10 +165,9 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
             ),
           const SizedBox(height: 12),
           _Steps(subtasks: detail.subtasks),
-          if (session != null) ...[
-            const SizedBox(height: 16),
-            _ParkingLot(occurrenceId: session.occurrenceId),
-          ],
+          // Auch vor dem Start: Einfälle kommen nicht erst mit dem Countdown.
+          const SizedBox(height: 16),
+          _ParkingLot(occurrenceId: session?.occurrenceId),
         ],
       );
       body = Column(
@@ -466,11 +465,12 @@ class _RingPainter extends CustomPainter {
 }
 
 /// Der Ablenkungs-Parkplatz: ein Feld für plötzliche Einfälle, die in der
-/// Inbox landen, ohne den Countdown zu stören.
+/// Inbox landen, ohne den Countdown zu stören. [occurrenceId] ist das
+/// Vorkommen der laufenden Sitzung; vor dem Start gibt es noch keines.
 class _ParkingLot extends ConsumerStatefulWidget {
-  const _ParkingLot({required this.occurrenceId});
+  const _ParkingLot({this.occurrenceId});
 
-  final String occurrenceId;
+  final String? occurrenceId;
 
   @override
   ConsumerState<_ParkingLot> createState() => _ParkingLotState();

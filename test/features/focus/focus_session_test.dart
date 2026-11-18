@@ -78,17 +78,53 @@ void main() {
     );
   });
 
-  test('eine Sitzung von gestern ist veraltet', () {
-    // Ortszeit, damit der Test in jeder Zeitzone gleich läuft.
-    final session = FocusSession.start(
-      taskId: 't1',
-      occurrenceId: 'o1',
-      now: DateTime(2026, 11, 18, 12, 0),
-      length: const Duration(minutes: 5),
-    );
+  test(
+    'die gebrauchte Zeit endet mit dem Countdown, nicht erst beim Tippen',
+    () {
+      final session = fiveMinutes();
 
-    expect(session.isFromDay(DateTime(2026, 11, 18, 23, 0)), isTrue);
-    expect(session.isFromDay(DateTime(2026, 11, 19, 0, 5)), isFalse);
+      // 20 Minuten nach dem Ende ist noch niemand auf „Fertig“ gegangen.
+      expect(session.elapsedMinutes(start.add(const Duration(minutes: 25))), 5);
+      // Mit „Noch 5 Minuten“ zählt der verlängerte Abschnitt mit.
+      final more = session.extended(
+        const Duration(minutes: 5),
+        now: start.add(const Duration(minutes: 7)),
+      );
+      expect(more.elapsedMinutes(start.add(const Duration(hours: 1))), 12);
+    },
+  );
+
+  group('vergessene Sitzung', () {
+    test('läuft weiter, auch über Mitternacht', () {
+      // Ortszeit, damit der Test in jeder Zeitzone gleich läuft.
+      final session = FocusSession.start(
+        taskId: 't1',
+        occurrenceId: 'o1',
+        now: DateTime(2026, 11, 18, 23, 50),
+        length: const Duration(minutes: 15),
+      );
+
+      expect(session.isStale(DateTime(2026, 11, 19, 0, 5)), isFalse);
+    });
+
+    test('abgelaufen, aber jung, bleibt für „Fertig“ erreichbar', () {
+      final session = fiveMinutes();
+      final justUnderLimit = session.endsAt.add(
+        FocusSession.staleAfter - const Duration(minutes: 1),
+      );
+
+      expect(session.isStale(justUnderLimit), isFalse);
+    });
+
+    test('gilt als vergessen, sobald das Ende lange zurückliegt', () {
+      final session = fiveMinutes();
+
+      expect(
+        session.isStale(session.endsAt.add(FocusSession.staleAfter)),
+        isTrue,
+      );
+      expect(FocusSession.staleAfter, const Duration(hours: 6));
+    });
   });
 
   test('übersteht das Speichern als Text', () {

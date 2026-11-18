@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/clock/clock_provider.dart';
 import '../../core/db/app_database_provider.dart';
-import '../today/today_providers.dart';
 import 'focus_repository.dart';
 import 'focus_session.dart';
 
@@ -12,8 +12,8 @@ final focusRepositoryProvider = Provider<FocusRepository>(
   ),
 );
 
-/// Die laufende Fokus-Sitzung zur Aufgabe [taskId]; `null`, wenn es für sie
-/// keine gibt. Eine Sitzung von gestern gilt als vergessen.
+/// Die Fokus-Sitzung zur Aufgabe [taskId]; `null`, wenn es für sie keine gibt.
+/// Eine Sitzung, deren Ende lange zurückliegt, gilt als vergessen.
 final focusSessionProvider = StreamProvider.family<FocusSession?, String>((
   ref,
   taskId,
@@ -26,7 +26,7 @@ final focusSessionProvider = StreamProvider.family<FocusSession?, String>((
         (session) =>
             session != null &&
                 session.taskId == taskId &&
-                session.isFromDay(clock())
+                !session.isStale(clock())
             ? session
             : null,
       );

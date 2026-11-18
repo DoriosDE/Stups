@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:stups/core/clock/clock_provider.dart';
 import 'package:stups/core/db/app_database.dart';
 import 'package:stups/features/tasks/task_repository.dart';
-import 'package:stups/features/today/today_providers.dart';
 
 import '../../support/app_harness.dart';
 
@@ -91,7 +91,13 @@ void main() {
     await openFocus(tester);
 
     await start(tester, 'Frei');
-    await tester.enterText(find.byType(TextField), '25');
+    await tester.enterText(
+      find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.byType(TextField),
+      ),
+      '25',
+    );
     await tester.pump();
     await tester.tap(find.widgetWithText(FilledButton, 'Los'));
     await tester.pumpAndSettle();
@@ -178,11 +184,11 @@ void main() {
 
       await tester.tap(find.widgetWithText(FilledButton, 'Fertig'));
       await tester.pumpAndSettle();
-      // 5 Minuten 30 Sekunden, aufgerundet.
+      // Der Countdown dauerte 5 Minuten; die 30 Sekunden danach zählen nicht.
       final field = tester.widget<TextField>(
         find.widgetWithText(TextField, 'Minuten'),
       );
-      expect(field.controller!.text, '6');
+      expect(field.controller!.text, '5');
       await tester.tap(find.widgetWithText(FilledButton, 'Fertig').last);
       await tester.pumpAndSettle();
 
@@ -289,6 +295,26 @@ void main() {
       expect(items.map((i) => i.content), ['Mama zurückrufen']);
       // Der Countdown läuft ungestört weiter.
       expect(find.text('10:00'), findsOneWidget);
+    });
+
+    testWidgets('den Parkplatz gibt es schon vor dem Start', (tester) async {
+      final db = await openFocus(tester);
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'z. B. Mama zurückrufen'),
+        'Mama zurückrufen',
+      );
+      await tester.pump();
+      await tester.tap(find.widgetWithText(FilledButton, 'Parken'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Geparkt. Er wartet in der Inbox.'), findsOneWidget);
+      final items = (await tester.runAsync(
+        () => db.select(db.inboxItems).get(),
+      ))!;
+      expect(items.map((i) => i.content), ['Mama zurückrufen']);
+      // Noch kein Countdown: die Wahl der Dauer steht weiter da.
+      expect(find.widgetWithText(FilledButton, '10 Min.'), findsOneWidget);
     });
 
     testWidgets('ohne Text ist „Parken“ aus', (tester) async {

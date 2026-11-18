@@ -2,15 +2,13 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/clock/clock_provider.dart';
 import '../../core/db/app_database.dart';
 import '../../core/db/app_database_provider.dart';
 import '../../core/db/day_key.dart';
 import '../tasks/task_providers.dart';
 import 'day_plan_repository.dart';
 import 'today_state.dart';
-
-/// Die Uhr der App; Tests können sie festlegen.
-final clockProvider = Provider<DateTime Function()>((ref) => DateTime.now);
 
 /// Der heutige Kalendertag als `yyyy-MM-dd`. Er wechselt um Mitternacht von
 /// selbst, auch wenn die App offen bleibt; war sie im Hintergrund, greift der
