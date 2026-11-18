@@ -455,5 +455,127 @@
   "settingsReduceAnimationsHint": "Dann gibt es kein Konfetti und keine Bewegung bei der Feier.",
   "@settingsReduceAnimationsHint": {
     "description": "Erklärung unter dem Schalter „Animationen reduzieren“"
+  },
+  "focusPickTitle": "Wie lange magst du dranbleiben?",
+  "@focusPickTitle": {
+    "description": "Frage über den Dauer-Knöpfen, bevor der Fokus-Countdown startet"
+  },
+  "focusMinutes": "{count} Min.",
+  "@focusMinutes": {
+    "description": "Knopf zur Wahl der Fokus-Dauer, zum Beispiel „10 Min.“",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "focusFree": "Frei",
+  "@focusFree": {
+    "description": "Knopf, mit dem man die Fokus-Dauer selbst eintippt"
+  },
+  "focusFreeTitle": "Wie viele Minuten?",
+  "@focusFreeTitle": {
+    "description": "Überschrift des Dialogs für eine frei gewählte Fokus-Dauer"
+  },
+  "focusFreeConfirm": "Los",
+  "@focusFreeConfirm": {
+    "description": "Bestätigungsknopf im Dialog für eine frei gewählte Fokus-Dauer"
+  },
+  "focusRemaining": "Noch {time}",
+  "@focusRemaining": {
+    "description": "Vorlesetext für den Countdown, zum Beispiel „Noch 4:30“",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "4:30"
+      }
+    }
+  },
+  "focusTimeUp": "Die Zeit ist um.",
+  "@focusTimeUp": {
+    "description": "Hinweis im Fokus, wenn der Countdown bei null ist"
+  },
+  "focusMoreFive": "Noch 5 Minuten",
+  "@focusMoreFive": {
+    "description": "Knopf bei Zeitende: den Fokus um 5 Minuten verlängern"
+  },
+  "focusDone": "Fertig",
+  "@focusDone": {
+    "description": "Knopf bei Zeitende: die Aufgabe ist erledigt"
+  },
+  "focusDoneEarly": "Schon fertig",
+  "@focusDoneEarly": {
+    "description": "Leiser Knopf während des Countdowns: die Aufgabe ist früher erledigt"
+  },
+  "focusStop": "Für heute reicht’s",
+  "@focusStop": {
+    "description": "Ausstieg aus dem Fokus, jederzeit und ohne Vorwurf"
+  },
+  "focusStopped": "Du hast angefangen. Das zählt.",
+  "@focusStopped": {
+    "description": "Kurze Meldung nach „Für heute reicht’s“, ermutigend und ohne Vorwurf"
+  },
+  "focusParkTitle": "Plötzlicher Einfall?",
+  "@focusParkTitle": {
+    "description": "Überschrift des Ablenkungs-Parkplatzes im Fokus"
+  },
+  "focusParkHint": "Park ihn hier, er wartet in der Inbox.",
+  "@focusParkHint": {
+    "description": "Erklärung unter der Überschrift des Ablenkungs-Parkplatzes"
+  },
+  "focusParkButton": "Parken",
+  "@focusParkButton": {
+    "description": "Knopf, der einen Einfall in die Inbox parkt"
+  },
+  "focusParked": "Geparkt. Er wartet in der Inbox.",
+  "@focusParked": {
+    "description": "Meldung, nachdem ein Einfall geparkt wurde"
+  },
+  "focusSwitchTitle": "Bei „{task}“ läuft noch ein Fokus.",
+  "@focusSwitchTitle": {
+    "description": "Überschrift der Rückfrage, wenn man den Fokus für eine andere Aufgabe startet, während für eine Aufgabe schon einer läuft",
+    "placeholders": {
+      "task": {
+        "type": "String",
+        "example": "Steuer machen"
+      }
+    }
+  },
+  "focusSwitchBody": "Stattdessen hier starten? „{task}“ bleibt offen im Plan.",
+  "@focusSwitchBody": {
+    "description": "Erklärung der Rückfrage beim Wechsel der Fokus-Aufgabe; beruhigt, dass die laufende Aufgabe nicht verloren geht",
+    "placeholders": {
+      "task": {
+        "type": "String",
+        "example": "Steuer machen"
+      }
+    }
+  },
+  "focusCurrentStep": "Jetzt dran",
+  "@focusCurrentStep": {
+    "description": "Überschrift über dem Schritt, der im Fokus als Nächstes ansteht, sobald schon ein Schritt abgehakt ist"
+  },
+  "focusStepsDoneHeading": "Geschafft",
+  "@focusStepsDoneHeading": {
+    "description": "Überschrift über den abgehakten Schritten im Fokus"
+  },
+  "focusAllStepsDone": "Alle Schritte geschafft.",
+  "@focusAllStepsDone": {
+    "description": "Sanftes Lob im Fokus, wenn der letzte Schritt abgehakt ist; darunter steht das Angebot „Fertig“"
+  },
+  "focusSwitchConfirm": "Hier starten",
+  "@focusSwitchConfirm": {
+    "description": "Knopf der Rückfrage: den Fokus für die neue Aufgabe starten und den laufenden beenden"
+  },
+  "focusSwitchStay": "Bei „{task}“ bleiben",
+  "@focusSwitchStay": {
+    "description": "Knopf der Rückfrage: zurück zur Aufgabe, deren Fokus schon läuft",
+    "placeholders": {
+      "task": {
+        "type": "String",
+        "example": "Steuer machen"
+      }
+    }
   }
 }

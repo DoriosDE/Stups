@@ -51,9 +51,11 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Erledigt die offene Aufgabe in der Detailansicht mit 15 Minuten.
-  Future<void> completeInDetail(WidgetTester tester) async {
-    await tester.tap(find.widgetWithText(FilledButton, 'Erledigt'));
+  /// Erledigt die Aufgabe im Fokus (nach „Los geht’s“) mit 15 Minuten.
+  Future<void> completeInFocus(WidgetTester tester) async {
+    await tester.tap(find.widgetWithText(FilledButton, '5 Min.'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Schon fertig'));
     await tester.pumpAndSettle();
     await tester.enterText(find.widgetWithText(TextField, 'Minuten'), '15');
     await tester.pump();
@@ -169,14 +171,17 @@ void main() {
   });
 
   group('Tagesplan abarbeiten', () {
-    testWidgets('„Los geht’s“ öffnet die Aufgabe', (tester) async {
+    testWidgets('„Los geht’s“ öffnet den Fokus mit der Wahl der Dauer', (
+      tester,
+    ) async {
       await pumpStupsApp(tester, seed: seedTasks);
       await chooseEnergy(tester, 'Wenig');
 
       await tester.tap(find.widgetWithText(FilledButton, 'Los geht’s'));
       await tester.pumpAndSettle();
 
-      expect(find.widgetWithText(FilledButton, 'Erledigt'), findsOneWidget);
+      expect(find.text('Steuer machen'), findsOneWidget);
+      expect(find.widgetWithText(FilledButton, '5 Min.'), findsOneWidget);
     });
 
     testWidgets('„Morgen nochmal?“ nimmt die Aufgabe aus dem Plan, sie bleibt '
@@ -204,7 +209,7 @@ void main() {
         await tester.tap(find.widgetWithText(FilledButton, 'Los geht’s'));
         await tester.pumpAndSettle();
 
-        await completeInDetail(tester);
+        await completeInFocus(tester);
         await tester.tap(find.widgetWithText(FilledButton, 'Zu Heute'));
         await tester.pumpAndSettle();
 
@@ -220,7 +225,7 @@ void main() {
       await chooseEnergy(tester, 'Wenig');
       await tester.tap(find.widgetWithText(FilledButton, 'Los geht’s'));
       await tester.pumpAndSettle();
-      await completeInDetail(tester);
+      await completeInFocus(tester);
       await tester.tap(find.widgetWithText(FilledButton, 'Zu Heute'));
       await tester.pumpAndSettle();
 
@@ -253,7 +258,7 @@ void main() {
       await chooseEnergy(tester, 'Viel');
       await tester.tap(find.widgetWithText(FilledButton, 'Los geht’s'));
       await tester.pumpAndSettle();
-      await completeInDetail(tester);
+      await completeInFocus(tester);
       await tester.tap(find.widgetWithText(FilledButton, 'Zu Heute'));
       await tester.pumpAndSettle();
 
@@ -271,7 +276,7 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'Los geht’s'));
       await tester.pumpAndSettle();
 
-      await completeInDetail(tester);
+      await completeInFocus(tester);
 
       expect(find.text('„Steuer machen“ ist erledigt.'), findsOneWidget);
       expect(find.text('+1 Tat'), findsOneWidget);
@@ -283,7 +288,7 @@ void main() {
       await tester.tap(find.text('Hier bleiben'));
       await tester.pumpAndSettle();
       expect(find.text('+1 Tat'), findsNothing);
-      expect(find.widgetWithText(FilledButton, 'Erledigt'), findsNothing);
+      expect(find.text('Schon fertig'), findsNothing);
     });
 
     testWidgets('mit „Animationen reduzieren“ gibt es kein Konfetti', (
@@ -300,7 +305,7 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'Los geht’s'));
       await tester.pumpAndSettle();
 
-      await completeInDetail(tester);
+      await completeInFocus(tester);
 
       expect(find.text('+1 Tat'), findsOneWidget);
       expect(find.byKey(celebrationConfettiKey), findsNothing);
@@ -318,7 +323,7 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'Los geht’s'));
       await tester.pumpAndSettle();
 
-      await completeInDetail(tester);
+      await completeInFocus(tester);
 
       expect(find.text('+1 Tat'), findsOneWidget);
       expect(find.byKey(celebrationConfettiKey), findsNothing);
@@ -352,7 +357,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(haptics(), 0);
 
-        await completeInDetail(tester);
+        await completeInFocus(tester);
 
         expect(haptics(), greaterThan(0));
       });
@@ -369,7 +374,7 @@ void main() {
         await tester.tap(find.widgetWithText(FilledButton, 'Los geht’s'));
         await tester.pumpAndSettle();
 
-        await completeInDetail(tester);
+        await completeInFocus(tester);
 
         expect(find.text('+1 Tat'), findsOneWidget);
         expect(haptics(), 0);
@@ -415,7 +420,7 @@ void main() {
       await chooseEnergy(tester, 'Wenig');
       await tester.tap(find.widgetWithText(FilledButton, 'Los geht’s'));
       await tester.pumpAndSettle();
-      await completeInDetail(tester);
+      await completeInFocus(tester);
 
       expect(find.text('+1 Tat'), findsOneWidget);
       expect(find.byKey(companionKey), findsNothing);

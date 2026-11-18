@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../core/clock/clock_provider.dart';
 import '../../core/db/app_database.dart';
 import '../../core/l10n/area_display_name.dart';
 import '../../core/l10n/l10n.dart';
@@ -303,7 +304,7 @@ class _NextStep extends ConsumerWidget {
               foregroundColor: scheme.onSecondary,
               textStyle: theme.textTheme.titleMedium,
             ),
-            onPressed: () => context.push(AppRoutes.taskPath(task.id)),
+            onPressed: () => context.push(AppRoutes.focusPath(task.id)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

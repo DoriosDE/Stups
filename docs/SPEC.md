@@ -93,6 +93,7 @@ Die App ist eine reine Flutter-Client-App ohne Backend. Daten liegen in einer lo
 | Datenbank | drift (SQLite) | Relationale Abfragen für Wiederholungen, saubere Migrationen |
 | Navigation | go_router | Deklaratives Routing, Deep Links aus Benachrichtigungen |
 | Erinnerungen | flutter_local_notifications + timezone | Lokal geplant, kein Server nötig |
+| Bildschirm wach | wakelock_plus hinter der Schnittstelle `ScreenAwake` | Im Fokus geht der Bildschirm nicht aus, solange der Countdown läuft. Auf Android nur das Fenster-Flag `FLAG_KEEP_SCREEN_ON`: BSD-3, keine Berechtigung, kein Google-Dienst, F-Droid bleibt möglich |
 | Backup | JSON-Export und -Import über share_plus und file_picker | Datei bleibt beim Nutzer |
 | Bilder | Eigene gebündelte Illustrationen, optional eigenes Foto über image_picker | Keine fremden Bildrechte |
 | Sprache | flutter_localizations mit ARB-Dateien, Deutsch und Englisch (Ticket 16) | Weitere Sprachen ohne Umbau |
