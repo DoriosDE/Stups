@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../../core/db/app_database.dart';
+import '../../core/db/day_key.dart';
 
 /// Ein Schritt einer Aufgabe beim Anlegen oder Bearbeiten.
 ///
@@ -249,6 +250,17 @@ class TaskRepository {
         );
   }
 
+  /// Die Taten: so viele erledigte Vorkommen gibt es. Es gibt keine eigene
+  /// Tabelle dafür (siehe docs/SPEC.md, Datenmodell). Ein Vorkommen gilt pro
+  /// Aufgabe und Tag einmal, wer es zweimal erledigt, hat keine zweite Tat.
+  Stream<int> watchDeedCount() {
+    final count = _db.occurrences.id.count();
+    final query = _db.selectOnly(_db.occurrences)
+      ..addColumns([count])
+      ..where(_db.occurrences.status.equalsValue(OccurrenceStatus.done));
+    return query.map((row) => row.read(count)!).watchSingle();
+  }
+
   Stream<TaskDetail?> watchTask(String id) {
     // Schritte und Vorkommen hängen beide an der Aufgabe, deshalb kommen die
     // Zeilen als Kreuzprodukt; die Schritte werden danach nach ID bereinigt.
@@ -287,10 +299,4 @@ class TaskRepository {
   }
 }
 
-/// Kalendertag als lokaler Text `yyyy-MM-dd` (siehe docs/HANDOFF.md).
-String? _dayText(DateTime? day) {
-  if (day == null) return null;
-  final month = day.month.toString().padLeft(2, '0');
-  final date = day.day.toString().padLeft(2, '0');
-  return '${day.year.toString().padLeft(4, '0')}-$month-$date';
-}
+String? _dayText(DateTime? day) => day == null ? null : dayKey(day);

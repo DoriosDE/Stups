@@ -471,4 +471,22 @@ void main() {
       ['Wäsche sortieren', 'Maschine starten', 'Wäsche aufhängen'],
     );
   });
+
+  test(
+    'die Taten sind die erledigten Vorkommen, offene zählen nicht',
+    () async {
+      final area = await areaId(BuiltInArea.work);
+      final first = await tasks.create(TaskDraft(title: 'Eins', areaId: area));
+      final second = await tasks.create(TaskDraft(title: 'Zwei', areaId: area));
+      await tasks.create(TaskDraft(title: 'Drei', areaId: area));
+      expect(await tasks.watchDeedCount().first, 0);
+
+      await tasks.complete(first, actualMin: 5);
+      await tasks.complete(second, actualMin: 5);
+      // Ein zweites Mal am selben Tag ist keine zweite Tat.
+      await tasks.complete(second, actualMin: 9);
+
+      expect(await tasks.watchDeedCount().first, 2);
+    },
+  );
 }
