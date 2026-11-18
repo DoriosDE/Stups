@@ -8,6 +8,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/router/app_router.dart';
 import '../today/celebration.dart';
 import 'actual_minutes_sheet.dart';
+import 'step_widgets.dart';
 import 'task_providers.dart';
 import 'task_repository.dart';
 
@@ -93,33 +94,14 @@ class _TaskBody extends ConsumerWidget {
         Text(task.title, style: theme.textTheme.headlineSmall),
         if (firstStep != null) ...[
           const SizedBox(height: 16),
-          Card(
-            color: theme.colorScheme.secondaryContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.taskFirstStepHeading,
-                    style: theme.textTheme.labelLarge,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(firstStep.title, style: theme.textTheme.bodyLarge),
-                ],
-              ),
-            ),
+          StepHighlightCard(
+            heading: l10n.taskFirstStepHeading,
+            children: [Text(firstStep.title, style: theme.textTheme.bodyLarge)],
           ),
         ],
         if (laterSteps.isNotEmpty) ...[
           const SizedBox(height: 16),
-          Text(l10n.taskNextSteps, style: theme.textTheme.labelLarge),
-          for (final step in laterSteps)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.radio_button_unchecked),
-              title: Text(step.title),
-            ),
+          UpcomingStepsList(steps: laterSteps),
         ],
         if (due != null) ...[
           const SizedBox(height: 16),

@@ -10,7 +10,9 @@ import '../../core/clock/clock_provider.dart';
 import '../../core/db/app_database.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/router/app_router.dart';
+import '../inbox/thought_field.dart';
 import '../tasks/actual_minutes_sheet.dart';
+import '../tasks/step_widgets.dart';
 import '../tasks/task_providers.dart';
 import '../tasks/task_repository.dart';
 import '../today/celebration.dart';
@@ -303,8 +305,8 @@ class _Steps extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (allDone)
-          _card(
-            theme,
+          StepHighlightCard(
+            margin: EdgeInsets.zero,
             children: [
               Text(l10n.focusAllStepsDone, style: theme.textTheme.titleMedium),
               if (onFinish != null) ...[
@@ -320,16 +322,12 @@ class _Steps extends StatelessWidget {
             ],
           )
         else if (next != null)
-          _card(
-            theme,
+          StepHighlightCard(
+            margin: EdgeInsets.zero,
+            heading: done.isEmpty
+                ? l10n.taskFirstStepHeading
+                : l10n.focusCurrentStep,
             children: [
-              Text(
-                done.isEmpty
-                    ? l10n.taskFirstStepHeading
-                    : l10n.focusCurrentStep,
-                style: theme.textTheme.labelLarge,
-              ),
-              const SizedBox(height: 4),
               if (onToggle == null)
                 Text(next.title, style: theme.textTheme.bodyLarge)
               else
@@ -338,17 +336,12 @@ class _Steps extends StatelessWidget {
           ),
         if (later.isNotEmpty) ...[
           const SizedBox(height: 12),
-          Text(l10n.taskNextSteps, style: theme.textTheme.labelLarge),
-          for (final step in later)
-            if (onToggle == null)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-                leading: const Icon(Icons.radio_button_unchecked),
-                title: Text(step.title),
-              )
-            else
-              _stepTile(step, done: false),
+          if (onToggle == null)
+            UpcomingStepsList(steps: later, dense: true)
+          else ...[
+            Text(l10n.taskNextSteps, style: theme.textTheme.labelLarge),
+            for (final step in later) _stepTile(step, done: false),
+          ],
         ],
         if (done.isNotEmpty) ...[
           const SizedBox(height: 12),
@@ -366,18 +359,6 @@ class _Steps extends StatelessWidget {
       ],
     );
   }
-
-  Widget _card(ThemeData theme, {required List<Widget> children}) => Card(
-    margin: EdgeInsets.zero,
-    color: theme.colorScheme.secondaryContainer,
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
-      ),
-    ),
-  );
 
   /// Ein Schritt mit Haken; ein Tipp setzt oder nimmt ihn.
   Widget _stepTile(Subtask step, {required bool done, TextStyle? style}) =>
@@ -677,14 +658,7 @@ class _ParkingLotState extends ConsumerState<_ParkingLot> {
             const SizedBox(height: 2),
             Text(l10n.focusParkHint, style: theme.textTheme.bodyMedium),
             const SizedBox(height: 12),
-            TextField(
-              controller: _controller,
-              minLines: 1,
-              maxLines: 3,
-              keyboardType: TextInputType.multiline,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: InputDecoration(hintText: l10n.captureFieldHint),
-            ),
+            ThoughtField(controller: _controller),
             const SizedBox(height: 12),
             ValueListenableBuilder<TextEditingValue>(
               valueListenable: _controller,

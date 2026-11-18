@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../core/l10n/l10n.dart';
 import 'inbox_providers.dart';
+import 'thought_field.dart';
 
 /// Öffnet das Eingabeblatt „Kopf frei machen“.
 ///
@@ -62,14 +63,11 @@ class _CaptureSheetState extends ConsumerState<CaptureSheet> {
           const SizedBox(height: 4),
           Text(l10n.captureHint, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 14),
-          TextField(
+          ThoughtField(
             controller: _controller,
             autofocus: true,
             minLines: 2,
             maxLines: 4,
-            keyboardType: TextInputType.multiline,
-            textCapitalization: TextCapitalization.sentences,
-            decoration: InputDecoration(hintText: l10n.captureFieldHint),
           ),
           const SizedBox(height: 14),
           ValueListenableBuilder<TextEditingValue>(
