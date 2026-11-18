@@ -31,18 +31,33 @@ void main() {
     );
   }
 
-  /// Startet die App, wählt Energie „Wenig“ und öffnet den Fokus.
-  Future<AppDatabase> openFocus(WidgetTester tester) async {
+  /// Zwei Aufgaben: „Steuer machen“ (A) steht im Plan vor „Wäsche waschen“.
+  Future<void> seedTwoTasks(AppDatabase db) async {
+    await seedTask(db);
+    final area = await (db.select(
+      db.areas,
+    )..where((a) => a.builtInKey.equals(BuiltInArea.work))).getSingle();
+    await TaskRepository(db)
+        .create(TaskDraft(title: 'Wäsche waschen', areaId: area.id));
+  }
+
+  /// Startet die App, wählt die Energie und öffnet den Fokus der ersten
+  /// Aufgabe des Plans.
+  Future<AppDatabase> openFocus(
+    WidgetTester tester, {
+    Future<void> Function(AppDatabase)? seed,
+    String energy = 'Wenig',
+  }) async {
     // Ein hohes Telefon, damit auch der Parkplatz im Bild ist.
     tester.view.physicalSize = const Size(800, 1600);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final db = await pumpStupsApp(
       tester,
-      seed: seedTask,
+      seed: seed ?? seedTask,
       overrides: [clockProvider.overrideWithValue(() => now)],
     );
-    await tester.tap(find.widgetWithText(FilledButton, 'Wenig'));
+    await tester.tap(find.widgetWithText(FilledButton, energy));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Los geht’s'));
     await tester.pumpAndSettle();
@@ -267,6 +282,70 @@ void main() {
     await openFocus(tester);
 
     expect(find.text('Für heute reicht’s'), findsOneWidget);
+  });
+
+  group('zweite Aufgabe', () {
+    /// Für „Steuer machen“ läuft der Fokus; dann rückt „Wäsche waschen“ nach,
+    /// und man wählt dort eine Dauer. Die Rückfrage steht im Bild.
+    Future<AppDatabase> startSecondTask(WidgetTester tester) async {
+      final db = await openFocus(tester, seed: seedTwoTasks, energy: 'Mittel');
+      await start(tester, '10 Min.');
+      await advance(tester, const Duration(minutes: 1));
+      await tester.tap(find.byTooltip('Zurück'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Morgen nochmal?'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Los geht’s'));
+      await tester.pumpAndSettle();
+      expect(find.text('Wäsche waschen'), findsOneWidget);
+      await start(tester, '5 Min.');
+      return db;
+    }
+
+    testWidgets('fragt vor dem Wechsel und nennt die laufende Aufgabe', (
+      tester,
+    ) async {
+      await startSecondTask(tester);
+
+      expect(
+        find.text('Bei „Steuer machen“ läuft noch ein Fokus.'),
+        findsOneWidget,
+      );
+      // Noch nichts ist passiert: kein Countdown für die neue Aufgabe.
+      expect(find.text('5:00'), findsNothing);
+    });
+
+    testWidgets('„Hier starten“ beendet die alte Sitzung ohne Vorwurf', (
+      tester,
+    ) async {
+      final db = await startSecondTask(tester);
+
+      await tester.tap(find.widgetWithText(FilledButton, 'Hier starten'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('5:00'), findsOneWidget);
+      // „Steuer machen“ bleibt offen: gestartet, nicht erledigt.
+      final occurrences = (await tester.runAsync(
+        () => db.select(db.occurrences).get(),
+      ))!;
+      expect(occurrences.map((o) => o.status), [
+        OccurrenceStatus.started,
+        OccurrenceStatus.started,
+      ]);
+    });
+
+    testWidgets('„Bei der Aufgabe bleiben“ führt zurück zu ihr', (
+      tester,
+    ) async {
+      await startSecondTask(tester);
+
+      await tester.tap(find.text('Bei „Steuer machen“ bleiben'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Steuer machen'), findsOneWidget);
+      expect(find.text('9:00'), findsOneWidget);
+      expect(find.text('Wäsche waschen'), findsNothing);
+    });
   });
 
   group('Ablenkungs-Parkplatz', () {

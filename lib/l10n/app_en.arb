@@ -103,5 +103,9 @@
   "focusParkTitle": "A sudden thought?",
   "focusParkHint": "Park it here, it waits in the inbox.",
   "focusParkButton": "Park it",
-  "focusParked": "Parked. It waits in the inbox."
+  "focusParked": "Parked. It waits in the inbox.",
+  "focusSwitchTitle": "A focus is still running for “{task}”.",
+  "focusSwitchBody": "Start here instead? “{task}” stays open in your plan.",
+  "focusSwitchConfirm": "Start here",
+  "focusSwitchStay": "Stay with “{task}”"
 }

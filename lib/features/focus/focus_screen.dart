@@ -78,8 +78,30 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
     if (seconds != _shownSeconds) setState(() {});
   }
 
-  Future<void> _start(Duration length) =>
-      ref.read(focusRepositoryProvider).start(widget.taskId, length);
+  Future<void> _start(Duration length) async {
+    if (!await _confirmSwitch()) return;
+    await ref.read(focusRepositoryProvider).start(widget.taskId, length);
+  }
+
+  /// Läuft der Fokus schon für eine andere Aufgabe, fragt ein Dialog, ob der
+  /// neue ihn ersetzen soll. „Bei … bleiben“ geht zurück zu jener Aufgabe, ein
+  /// Wegtippen des Dialogs ändert nichts. Liefert, ob der Start weitergehen darf.
+  Future<bool> _confirmSwitch() async {
+    final other = ref.read(runningElsewhereProvider(widget.taskId)).value;
+    if (other == null) return true;
+    final title = ref.read(taskDetailProvider(other.taskId)).value?.task.title;
+    // Gibt es die andere Aufgabe nicht mehr, ist ihre Sitzung verwaist.
+    if (title == null) return true;
+    final replace = await showDialog<bool>(
+      context: context,
+      builder: (context) => _SwitchDialog(otherTitle: title),
+    );
+    if (!mounted) return false;
+    if (replace == false) {
+      context.pushReplacement(AppRoutes.focusPath(other.taskId));
+    }
+    return replace ?? false;
+  }
 
   Future<void> _pickFree() async {
     final minutes = await showDialog<int>(
@@ -128,9 +150,19 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
   Widget build(BuildContext context) {
     final detail = ref.watch(taskDetailProvider(widget.taskId)).value;
     final sessionState = ref.watch(focusSessionProvider(widget.taskId));
+    // Beides muss geladen sein, bevor man eine Dauer wählen kann: Erst dann
+    // weiß die Rückfrage, ob sie nötig ist und wie die andere Aufgabe heißt.
+    final elsewhere = ref.watch(runningElsewhereProvider(widget.taskId));
+    final elsewhereTask = elsewhere.value == null
+        ? null
+        : ref.watch(taskDetailProvider(elsewhere.value!.taskId));
     final now = ref.watch(clockProvider)();
     final Widget body;
-    if (_leaving || detail == null || !sessionState.hasValue) {
+    if (_leaving ||
+        detail == null ||
+        !sessionState.hasValue ||
+        !elsewhere.hasValue ||
+        (elsewhereTask != null && !elsewhereTask.hasValue)) {
       body = const SizedBox.shrink();
     } else {
       final session = sessionState.value;
@@ -247,6 +279,33 @@ class _Steps extends StatelessWidget {
               title: Text(step.title),
             ),
         ],
+      ],
+    );
+  }
+}
+
+/// Die Rückfrage, wenn für eine andere Aufgabe schon ein Fokus läuft. Sie
+/// liefert `true` für „Hier starten“ und `false` für „Bei … bleiben“.
+class _SwitchDialog extends StatelessWidget {
+  const _SwitchDialog({required this.otherTitle});
+
+  final String otherTitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return AlertDialog(
+      title: Text(l10n.focusSwitchTitle(otherTitle)),
+      content: Text(l10n.focusSwitchBody(otherTitle)),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(l10n.focusSwitchStay(otherTitle)),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(l10n.focusSwitchConfirm),
+        ),
       ],
     );
   }

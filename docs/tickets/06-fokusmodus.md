@@ -29,5 +29,6 @@ Umsetzung und Entscheidungen:
 - „Für heute reicht’s“ steht immer unten im Bild, beendet die Sitzung ohne Vorwurf („Du hast angefangen. Das zählt.“) und lässt die Aufgabe offen im Plan.
 - Der Parkplatz schreibt über `FocusRepository.park` in die Inbox (`InboxRepository.add`) und legt eine `DistractionNote` an, mit dem Vorkommen, sobald es eine Sitzung gibt. Er ist auch vor dem Start der Dauer da.
 - Die vorbelegte Dauer bei „Fertig“ endet mit dem Countdown (`elapsedMinutes` kappt bei `endsAt`); Zeit, die man nach dem Ende ungenutzt verstreichen lässt, zählt nicht.
+- Läuft der Fokus schon für eine andere Aufgabe, fragt beim Wählen der Dauer ein Dialog („Bei A läuft noch ein Fokus. Stattdessen hier starten?“). „Hier starten“ ersetzt die alte Sitzung; ihre Aufgabe bleibt offen (Vorkommen `started`). „Bei A bleiben“ führt zurück zu deren Fokus, Wegtippen ändert nichts (`runningElsewhereProvider`). `FocusRepository.start` selbst ersetzt weiter ohne Rückfrage; die Rückfrage gehört in den Screen.
 - „Vollbild“ heißt: eigene Route über dem Rahmen mit Tabs und Plus-Button. Das Display bleibt nicht per Wakelock an.
 - Bewusst nicht dabei: Schritte im Fokus abhaken (die Schritte sind nur zu sehen), Hinweis „Timer-Ende“ bei geschlossener App (Ticket 07; dafür liegt der Endzeitpunkt bereits gespeichert vor).

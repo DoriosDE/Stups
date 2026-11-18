@@ -14,9 +14,21 @@ final focusRepositoryProvider = Provider<FocusRepository>(
 
 /// Die Fokus-Sitzung zur Aufgabe [taskId]; `null`, wenn es für sie keine gibt.
 /// Eine Sitzung, deren Ende lange zurückliegt, gilt als vergessen.
-final focusSessionProvider = StreamProvider.family<FocusSession?, String>((
-  ref,
-  taskId,
+final focusSessionProvider = StreamProvider.family<FocusSession?, String>(
+  (ref, taskId) =>
+      _watchLiveSession(ref, (session) => session.taskId == taskId),
+);
+
+/// Die Fokus-Sitzung, die für eine andere Aufgabe als [taskId] läuft; `null`,
+/// wenn keine läuft. Sie würde ein Start für [taskId] ersetzen.
+final runningElsewhereProvider = StreamProvider.family<FocusSession?, String>(
+  (ref, taskId) =>
+      _watchLiveSession(ref, (session) => session.taskId != taskId),
+);
+
+Stream<FocusSession?> _watchLiveSession(
+  Ref ref,
+  bool Function(FocusSession session) matches,
 ) {
   final clock = ref.watch(clockProvider);
   return ref
@@ -24,10 +36,8 @@ final focusSessionProvider = StreamProvider.family<FocusSession?, String>((
       .watch()
       .map(
         (session) =>
-            session != null &&
-                session.taskId == taskId &&
-                !session.isStale(clock())
+            session != null && matches(session) && !session.isStale(clock())
             ? session
             : null,
       );
-});
+}

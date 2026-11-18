@@ -531,5 +531,39 @@
   "focusParked": "Geparkt. Er wartet in der Inbox.",
   "@focusParked": {
     "description": "Meldung, nachdem ein Einfall geparkt wurde"
+  },
+  "focusSwitchTitle": "Bei „{task}“ läuft noch ein Fokus.",
+  "@focusSwitchTitle": {
+    "description": "Überschrift der Rückfrage, wenn man den Fokus für eine andere Aufgabe startet, während für eine Aufgabe schon einer läuft",
+    "placeholders": {
+      "task": {
+        "type": "String",
+        "example": "Steuer machen"
+      }
+    }
+  },
+  "focusSwitchBody": "Stattdessen hier starten? „{task}“ bleibt offen im Plan.",
+  "@focusSwitchBody": {
+    "description": "Erklärung der Rückfrage beim Wechsel der Fokus-Aufgabe; beruhigt, dass die laufende Aufgabe nicht verloren geht",
+    "placeholders": {
+      "task": {
+        "type": "String",
+        "example": "Steuer machen"
+      }
+    }
+  },
+  "focusSwitchConfirm": "Hier starten",
+  "@focusSwitchConfirm": {
+    "description": "Knopf der Rückfrage: den Fokus für die neue Aufgabe starten und den laufenden beenden"
+  },
+  "focusSwitchStay": "Bei „{task}“ bleiben",
+  "@focusSwitchStay": {
+    "description": "Knopf der Rückfrage: zurück zur Aufgabe, deren Fokus schon läuft",
+    "placeholders": {
+      "task": {
+        "type": "String",
+        "example": "Steuer machen"
+      }
+    }
   }
 }
