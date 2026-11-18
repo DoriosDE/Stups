@@ -79,3 +79,15 @@ jobs:
           bash tool/verify_apk_version.sh
           "build/app/outputs/flutter-apk/app-${FLAVOR}-debug.apk"
           "$APP_ID" "$NAME" "$CODE" "$LABEL"
+
+      # Nur bei Tags mit Zusatz (`v0.x.y-dev`): Die Debug-APK hängt dann am Lauf,
+      # damit der Testkreis sie herunterladen kann. Branch-Pushes und Pull
+      # Requests laden nichts hoch. Builds von `master` (Tag ohne Zusatz) und das
+      # signierte Release gehören zu Ticket 10.
+      - name: APK als Artefakt hochladen
+        if: github.ref_type == 'tag' && steps.version.outputs.flavor == 'dev'
+        uses: actions/upload-artifact@v4
+        with:
+          name: stups-${{ steps.version.outputs.name }}
+          path: build/app/outputs/flutter-apk/app-${{ steps.version.outputs.flavor }}-debug.apk
+          if-no-files-found: error

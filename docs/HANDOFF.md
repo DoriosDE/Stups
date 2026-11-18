@@ -70,7 +70,7 @@ Die Version kommt allein aus dem Git-Tag. `tool/print_version.dart` berechnet da
 - **Dev und Prod nebeneinander:** Die Dev-App hat eine eigene App-ID und eigene Daten. Deshalb ist es unkritisch, dass Dev- und Release-Tag denselben Code haben können.
 - **Universal-APK:** Wir bauen ohne `--split-per-abi`, weil Flutter dort laut Kommentar im Projekt-Template `1000 × ABI` zum Code addiert (an einem Split-Build noch nicht geprüft).
 - **Lokal:** `flutter run` und `flutter build` nehmen ohne Angabe die Dev-App (`default-flavor` in der `pubspec.yaml`). In VS Code startet `.vscode/launch.json` mit `--flavor dev`.
-- **CI:** Bei jedem Lauf bestimmt die CI die Version mit `tool/print_version.dart` (mit Tag `v*` aus dem Tag, sonst `0.0.0-lokal`), übergibt `--flavor`, `--build-name` und `--build-number` und prüft danach mit `tool/verify_apk_version.sh`, ob die APK zu den erwarteten Werten passt. Ein ungültiger Tag bricht den Lauf ab.
+- **CI:** Bei jedem Lauf bestimmt die CI die Version mit `tool/print_version.dart` (mit Tag `v*` aus dem Tag, sonst `0.0.0-lokal`), übergibt `--flavor`, `--build-name` und `--build-number` und prüft danach mit `tool/verify_apk_version.sh`, ob die APK zu den erwarteten Werten passt. Ein ungültiger Tag bricht den Lauf ab. Bei Tags mit Zusatz (`v0.x.y-dev`, Flavor `dev`) lädt die CI die Debug-APK als Artefakt `stups-<Version>` hoch (Reiter „Actions“, Lauf zum Tag, unten bei „Artifacts“; GitHub hebt Artefakte standardmäßig 90 Tage auf). Branch-Pushes und Tags ohne Zusatz laden nichts hoch; für `master` kommt das signierte Release mit Ticket 10.
 - **F-Droid:** Die Build-Anleitung dort muss dieselben Werte aus dem Tag übergeben. Das ist noch zu prüfen.
 
 ## Datenbank
