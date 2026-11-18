@@ -5,13 +5,18 @@ import 'package:stups/core/db/app_database.dart';
 import 'package:stups/features/tasks/task_repository.dart';
 
 import '../../support/app_harness.dart';
+import '../../support/fake_screen_awake.dart';
 
 /// Der Fokus-Ablauf: von „Los geht’s“ über den Countdown bis „Fertig“ oder
 /// „Für heute reicht’s“.
 void main() {
   late DateTime now;
+  late FakeScreenAwake awake;
 
-  setUp(() => now = DateTime(2026, 11, 18, 9, 0));
+  setUp(() {
+    now = DateTime(2026, 11, 18, 9, 0);
+    awake = FakeScreenAwake();
+  });
 
   Future<void> seedTask(AppDatabase db) async {
     final area = await (db.select(
@@ -56,6 +61,7 @@ void main() {
       tester,
       seed: seed ?? seedTask,
       overrides: [clockProvider.overrideWithValue(() => now)],
+      screenAwake: awake,
     );
     await tester.tap(find.widgetWithText(FilledButton, energy));
     await tester.pumpAndSettle();
@@ -282,6 +288,68 @@ void main() {
     await openFocus(tester);
 
     expect(find.text('Für heute reicht’s'), findsOneWidget);
+  });
+
+  group('Bildschirm bleibt an', () {
+    testWidgets('vor dem Start nicht', (tester) async {
+      await openFocus(tester);
+
+      expect(awake.isOn, isFalse);
+    });
+
+    testWidgets('solange der Countdown läuft', (tester) async {
+      await openFocus(tester);
+
+      await start(tester, '10 Min.');
+
+      expect(awake.isOn, isTrue);
+    });
+
+    testWidgets('bei Zeitende wieder frei, mit „Noch 5 Minuten“ wieder an', (
+      tester,
+    ) async {
+      await openFocus(tester);
+      await start(tester, '5 Min.');
+
+      await advance(tester, const Duration(minutes: 5, seconds: 30));
+      expect(awake.isOn, isFalse);
+
+      await tester.tap(find.widgetWithText(FilledButton, 'Noch 5 Minuten'));
+      await tester.pumpAndSettle();
+      expect(awake.isOn, isTrue);
+    });
+
+    testWidgets('frei beim Zurückgehen', (tester) async {
+      await openFocus(tester);
+      await start(tester, '10 Min.');
+
+      await tester.tap(find.byTooltip('Zurück'));
+      await tester.pumpAndSettle();
+
+      expect(awake.isOn, isFalse);
+    });
+
+    testWidgets('frei nach „Für heute reicht’s“', (tester) async {
+      await openFocus(tester);
+      await start(tester, '10 Min.');
+
+      await tester.tap(find.text('Für heute reicht’s'));
+      await tester.pumpAndSettle();
+
+      expect(awake.isOn, isFalse);
+    });
+
+    testWidgets('frei nach „Fertig“', (tester) async {
+      await openFocus(tester);
+      await start(tester, '10 Min.');
+
+      await tester.tap(find.text('Schon fertig'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Fertig'));
+      await tester.pumpAndSettle();
+
+      expect(awake.isOn, isFalse);
+    });
   });
 
   group('Schritte abhaken', () {

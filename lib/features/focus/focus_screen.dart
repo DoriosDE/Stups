@@ -10,6 +10,7 @@ import '../../core/clock/clock_provider.dart';
 import '../../core/db/app_database.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/router/app_router.dart';
+import '../../core/screen_awake/screen_awake.dart';
 import '../inbox/thought_field.dart';
 import '../tasks/actual_minutes_sheet.dart';
 import '../tasks/step_widgets.dart';
@@ -52,9 +53,15 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
   /// verlassen und zeigt nichts mehr.
   bool _leaving = false;
 
+  late final ScreenAwake _screen;
+
+  /// Ob der Bildschirm gerade von diesem Bildschirm wach gehalten wird.
+  bool _awake = false;
+
   @override
   void initState() {
     super.initState();
+    _screen = ref.read(screenAwakeProvider);
     WidgetsBinding.instance.addObserver(this);
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
   }
@@ -63,7 +70,21 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
   void dispose() {
     _ticker?.cancel();
     WidgetsBinding.instance.removeObserver(this);
+    // Wer den Fokus verlässt, gibt den Bildschirm wieder frei.
+    if (_awake) unawaited(_screen.release());
     super.dispose();
+  }
+
+  /// Der Bildschirm bleibt an, solange der Countdown läuft. Bei Zeitende, ohne
+  /// Sitzung und beim Verlassen folgt er wieder der Systemeinstellung: Wer das
+  /// Handy liegen lässt, soll nicht den Akku leeren.
+  void _syncAwake() {
+    final session = ref.read(focusSessionProvider(widget.taskId)).value;
+    final now = ref.read(clockProvider)();
+    final wanted = !_leaving && session != null && !session.isOver(now);
+    if (wanted == _awake) return;
+    _awake = wanted;
+    unawaited(wanted ? _screen.keepOn() : _screen.release());
   }
 
   @override
@@ -73,8 +94,10 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
   }
 
   void _tick() {
+    if (!mounted) return;
+    _syncAwake();
     final session = ref.read(focusSessionProvider(widget.taskId)).value;
-    if (session == null || !mounted) return;
+    if (session == null) return;
     final now = ref.read(clockProvider)();
     final seconds = _secondsLeft(session, now);
     if (seconds != _shownSeconds) setState(() {});
@@ -132,6 +155,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
     await ref.read(focusRepositoryProvider).stop();
     if (!mounted) return;
     setState(() => _leaving = true);
+    _syncAwake();
     await celebrate(context, ref, taskTitle: detail.task.title);
     if (mounted) context.go(AppRoutes.today);
   }
@@ -144,6 +168,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
     await ref.read(focusRepositoryProvider).stop();
     if (!mounted) return;
     setState(() => _leaving = true);
+    _syncAwake();
     messenger.showSnackBar(SnackBar(content: Text(message)));
     router.go(AppRoutes.today);
   }
@@ -152,6 +177,8 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
   Widget build(BuildContext context) {
     final detail = ref.watch(taskDetailProvider(widget.taskId)).value;
     final sessionState = ref.watch(focusSessionProvider(widget.taskId));
+    // Start, Verlängern und Beenden ändern, ob der Bildschirm an bleiben soll.
+    ref.listen(focusSessionProvider(widget.taskId), (_, _) => _syncAwake());
     // Beides muss geladen sein, bevor man eine Dauer wählen kann: Erst dann
     // weiß die Rückfrage, ob sie nötig ist und wie die andere Aufgabe heißt.
     final elsewhere = ref.watch(runningElsewhereProvider(widget.taskId));
