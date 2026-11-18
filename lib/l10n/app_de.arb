@@ -20,10 +20,6 @@
   "@tabMore": {
     "description": "Name des Tabs mit Rückblick, Einstellungen und Hilfe"
   },
-  "todayHint": "Hier steht bald dein nächster Schritt.",
-  "@todayHint": {
-    "description": "Platzhaltertext auf „Heute“, bis der Tagesplan da ist"
-  },
   "routinesHint": "Routinen und Gewohnheiten kommen in Version 0.2.",
   "@routinesHint": {
     "description": "Platzhaltertext auf „Routinen“"
@@ -303,5 +299,161 @@
   "areaPersonal": "Persönliches",
   "@areaPersonal": {
     "description": "Anzeigename des eingebauten Bereichs „Persönliches“ (Kennung personal)"
+  },
+  "todayGreeting": "Hallo, ich bin {name}.",
+  "@todayGreeting": {
+    "description": "Begrüßung oben auf „Heute“; der Name ist der des Begleiters",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Stups"
+      }
+    }
+  },
+  "todayEnergyQuestion": "Wie viel Energie hast du heute?",
+  "@todayEnergyQuestion": {
+    "description": "Frage des morgendlichen Energie-Checks auf „Heute“"
+  },
+  "todayEnergyNote": "Danach stelle ich dir einen passenden Tagesplan zusammen.",
+  "@todayEnergyNote": {
+    "description": "Hinweis unter den Energie-Knöpfen: aus der Energie wird der Tagesplan"
+  },
+  "energyLow": "Wenig",
+  "@energyLow": {
+    "description": "Knopf im Energie-Check für wenig Energie (ein Tag mit 1 Aufgabe)"
+  },
+  "energyMedium": "Mittel",
+  "@energyMedium": {
+    "description": "Knopf im Energie-Check für mittlere Energie (ein Tag mit 2 Aufgaben)"
+  },
+  "energyHigh": "Viel",
+  "@energyHigh": {
+    "description": "Knopf im Energie-Check für viel Energie (ein Tag mit 3 Aufgaben)"
+  },
+  "todayNextStep": "Dein nächster Schritt",
+  "@todayNextStep": {
+    "description": "Kleine Überschrift über der Aufgabe, die jetzt dran ist"
+  },
+  "todayFirstMiniStep": "Erster Mini-Schritt: {step}",
+  "@todayFirstMiniStep": {
+    "description": "Zeile unter der Aufgabe auf „Heute“ mit ihrem allerersten Mini-Schritt",
+    "placeholders": {
+      "step": {
+        "type": "String",
+        "example": "Ordner aus dem Regal holen"
+      }
+    }
+  },
+  "todayStart": "Los geht’s",
+  "@todayStart": {
+    "description": "Großer Knopf auf „Heute“, der die nächste Aufgabe öffnet"
+  },
+  "todayProgress": "{done} von {total} geschafft",
+  "@todayProgress": {
+    "description": "Fortschritt im Tagesplan, zum Beispiel „1 von 3 geschafft“",
+    "placeholders": {
+      "done": {
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "todayChangeEnergy": "Energie ändern",
+  "@todayChangeEnergy": {
+    "description": "Knopf auf „Heute“, der den Energie-Check noch einmal öffnet"
+  },
+  "todayPlanTitle": "Dein Plan für heute",
+  "@todayPlanTitle": {
+    "description": "Überschrift des eingeklappten Tagesplans auf „Heute“"
+  },
+  "todayTomorrowAgain": "Morgen nochmal?",
+  "@todayTomorrowAgain": {
+    "description": "Knopf, der die Aufgabe aus dem Plan von heute nimmt; sie bleibt in der Aufgabenliste. Kein Vorwurf, nur ein freundliches Angebot."
+  },
+  "todayDayDone": "Für heute geschafft. Der Rest des Tages gehört dir.",
+  "@todayDayDone": {
+    "description": "Meldung auf „Heute“, wenn alle Aufgaben des Tagesplans erledigt sind"
+  },
+  "todayOneMore": "Doch noch eine Aufgabe",
+  "@todayOneMore": {
+    "description": "Knopf, der nach einem geschafften Tag eine weitere Aufgabe in den Plan nimmt"
+  },
+  "todayQuiet": "Alles ruhig. Magst du Kopf frei machen?",
+  "@todayQuiet": {
+    "description": "Meldung auf „Heute“, wenn es nichts zu tun gibt; der Knopf darunter öffnet „Kopf frei machen“"
+  },
+  "todayDeeds": "{count, plural, =1{1 Tat} other{{count} Taten}}",
+  "@todayDeeds": {
+    "description": "Taten-Zähler auf „Heute“: so viele Aufgaben sind insgesamt erledigt",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "celebrationDone": "„{title}“ ist erledigt.",
+  "@celebrationDone": {
+    "description": "Text der Feier nach dem Erledigen; der Titel der Aufgabe steht in Anführungszeichen",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Steuer machen"
+      }
+    }
+  },
+  "celebrationPlus": "+1 Tat",
+  "@celebrationPlus": {
+    "description": "Gelbes Schild in der Feier: die erledigte Aufgabe zählt als eine Tat"
+  },
+  "celebrationCompanion": "{name} freut sich mit dir.",
+  "@celebrationCompanion": {
+    "description": "Satz in der Feier, wenn der Begleiter angezeigt wird",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Stups"
+      }
+    }
+  },
+  "celebrationToToday": "Zu Heute",
+  "@celebrationToToday": {
+    "description": "Knopf in der Feier, der zu „Heute“ führt"
+  },
+  "celebrationStay": "Hier bleiben",
+  "@celebrationStay": {
+    "description": "Knopf in der Feier, der sie schließt und bei der Aufgabe bleibt"
+  },
+  "companionDefaultName": "Stups",
+  "@companionDefaultName": {
+    "description": "Standardname des Begleiters, solange die Person keinen eigenen vergibt"
+  },
+  "settingsTitle": "Einstellungen",
+  "@settingsTitle": {
+    "description": "Überschrift der Einstellungen und Eintrag unter „Mehr“"
+  },
+  "settingsCompanionShow": "Begleiter anzeigen",
+  "@settingsCompanionShow": {
+    "description": "Schalter in den Einstellungen: Begleiter bei Begrüßung und Erfolg zeigen"
+  },
+  "settingsCompanionName": "Name des Begleiters",
+  "@settingsCompanionName": {
+    "description": "Beschriftung des Namensfelds für den Begleiter in den Einstellungen"
+  },
+  "settingsHaptics": "Vibrieren bei Erfolgen",
+  "@settingsHaptics": {
+    "description": "Schalter in den Einstellungen: kurzes Vibrieren nach dem Erledigen"
+  },
+  "settingsReduceAnimations": "Animationen reduzieren",
+  "@settingsReduceAnimations": {
+    "description": "Schalter in den Einstellungen: weniger Bewegung"
+  },
+  "settingsReduceAnimationsHint": "Dann gibt es kein Konfetti und keine Bewegung bei der Feier.",
+  "@settingsReduceAnimationsHint": {
+    "description": "Erklärung unter dem Schalter „Animationen reduzieren“"
   }
 }

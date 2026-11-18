@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../features/routines/routines_screen.dart';
+import '../../features/settings/settings_screen.dart';
 import '../../features/household/household_screen.dart';
 import '../../features/more/more_screen.dart';
 import '../../features/shell/shell_scaffold.dart';
@@ -17,6 +18,7 @@ abstract final class AppRoutes {
   static const routines = '/routinen';
   static const household = '/haushalt';
   static const more = '/mehr';
+  static const settings = '/einstellungen';
   static const newTask = '/aufgaben/neu';
   static const task = '/aufgaben/:id';
   static const editTask = '/aufgaben/:id/bearbeiten';
@@ -45,6 +47,10 @@ GoRouter createRouter({String initialLocation = AppRoutes.today}) {
       ),
       // Formulare und Detailansichten decken den Rahmen mit Tabs ab: eine Sache
       // pro Bildschirm.
+      GoRoute(
+        path: AppRoutes.settings,
+        builder: (context, state) => const SettingsScreen(),
+      ),
       GoRoute(
         path: AppRoutes.newTask,
         builder: (context, state) => const TaskFormScreen(),

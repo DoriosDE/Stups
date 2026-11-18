@@ -64,6 +64,11 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Fertig'));
     await tester.pumpAndSettle();
 
+    // Zuerst die Feier; „Hier bleiben“ lässt die Detailansicht stehen.
+    expect(find.text('+1 Tat'), findsOneWidget);
+    await tester.tap(find.text('Hier bleiben'));
+    await tester.pumpAndSettle();
+
     expect(find.text('Geschafft!'), findsOneWidget);
     expect(find.text('Geschätzt 10 Min., gebraucht 14 Min.'), findsOneWidget);
     expect(find.widgetWithText(FilledButton, 'Erledigt'), findsNothing);

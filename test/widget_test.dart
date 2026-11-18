@@ -35,7 +35,10 @@ void main() {
   ) async {
     await pumpApp(tester);
 
-    expect(find.text('Hier steht bald dein nächster Schritt.'), findsOneWidget);
+    expect(
+      find.text('Alles ruhig. Magst du Kopf frei machen?'),
+      findsOneWidget,
+    );
     for (final label in ['Heute', 'Aufgaben', 'Routinen', 'Haushalt', 'Mehr']) {
       expect(find.widgetWithText(NavigationDestination, label), findsOneWidget);
     }

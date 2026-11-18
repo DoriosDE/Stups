@@ -125,6 +125,14 @@ Alle Oberflächentexte stehen in Sprachdateien (ARB) unter `lib/l10n/`. Deutsch 
 - Anzeigenamen eingebauter Bereiche liefert `areaDisplayName(l10n, area)`; ein eigener Name in der Datenbank gewinnt.
 - In Tests liefert `MarkerLocalizations` (`test/support/marker_localizations.dart`) statt der Texte Marker wie `⟦tabToday⟧`. So zeigt ein Test, dass ein Text aus den Sprachdateien kommt, unabhängig vom Wortlaut.
 
+## Heute und Feier
+
+- **Tagesplan:** `lib/features/today/plan_picker.dart` wählt die Aufgaben (reine Funktion, getestet), `day_plan_repository.dart` legt den Plan pro Kalendertag in `DayPlans` ab (`plannedTaskIds` als JSON). Ein neuer Tag hat keinen Plan; Unerledigtes verfällt dadurch von selbst.
+- **Taten:** `TaskRepository.watchDeedCount()` zählt die erledigten Vorkommen; es gibt keine eigene Tabelle.
+- **Einstellungen:** `lib/core/settings/` liest und schreibt die Tabelle `Settings` (Begleiter anzeigen und benennen, Vibrieren, Animationen reduzieren). Der Standardname des Begleiters steht in den Sprachdateien (`companionDefaultName`); in der Datenbank steht nur ein selbst vergebener Name.
+- **Feier:** `celebrate()` in `lib/features/today/celebration.dart` läuft nach dem Erledigen in der Detailansicht. Konfetti und Begleiter-Animation entfallen bei „Animationen reduzieren“ und bei der Systemeinstellung „Bewegung reduzieren“. Das Vibrieren wird nicht abgewartet (im Widget-Test hängt ein `await` auf `HapticFeedback` ohne Plattform-Handler).
+- **Tests:** Wer in einem Widget-Test eine Aufgabe erledigt, sieht danach die Feier und schließt sie mit „Hier bleiben“ oder „Zu Heute“.
+
 ## Designregeln aus den Prototyp-Runden
 
 - Ein Dashboard mit vielen Elementen (Energie-Chips, große Schritt-Karte, Figur, dicke Knöpfe) wirkte unübersichtlich.
