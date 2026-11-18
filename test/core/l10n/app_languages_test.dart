@@ -1,9 +1,12 @@
+import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stups/app.dart';
 import 'package:stups/core/app_info/app_info_provider.dart';
+import 'package:stups/core/db/app_database.dart';
+import 'package:stups/core/db/app_database_provider.dart';
 
 /// Die App folgt der Systemsprache und zeigt echte Texte in
 /// Deutsch oder Englisch; ohne unterstützte Sprache gilt Englisch. Die
@@ -13,9 +16,18 @@ void main() {
   Future<void> pumpApp(WidgetTester tester, List<Locale> systemLocales) async {
     tester.platformDispatcher.localesTestValue = systemLocales;
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
+    final db = AppDatabase(NativeDatabase.memory());
+    // Die Datenbank erst schließen, wenn die Oberfläche ihre Streams abbestellt
+    // hat (siehe docs/HANDOFF.md, „Datenbank“).
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(seconds: 1));
+      await tester.runAsync(db.close);
+    });
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          appDatabaseProvider.overrideWithValue(db),
           packageInfoProvider.overrideWith(
             (ref) async => PackageInfo(
               appName: 'Stups',
@@ -49,10 +61,7 @@ void main() {
       await pumpApp(tester, const [Locale('en', 'US')]);
 
       expectTabs(tabsEn);
-      expect(
-        find.text('Your next step will show up here soon.'),
-        findsOneWidget,
-      );
+      expect(find.text('All quiet. Want to clear your head?'), findsOneWidget);
       expect(find.byTooltip('Clear your head'), findsOneWidget);
     });
 
@@ -61,7 +70,7 @@ void main() {
 
       expectTabs(tabsDe);
       expect(
-        find.text('Hier steht bald dein nächster Schritt.'),
+        find.text('Alles ruhig. Magst du Kopf frei machen?'),
         findsOneWidget,
       );
       expect(find.byTooltip('Kopf frei machen'), findsOneWidget);

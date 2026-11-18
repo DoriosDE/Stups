@@ -10,6 +10,7 @@ import 'package:stups/core/db/app_database.dart';
 import 'package:stups/core/db/app_database_provider.dart';
 import 'package:stups/core/router/app_router.dart';
 import 'package:stups/core/theme/app_theme.dart';
+import 'package:stups/features/inbox/capture_sheet.dart';
 import 'package:stups/features/inbox/inbox_repository.dart';
 import 'package:stups/features/shell/placeholder_page.dart';
 import 'package:stups/features/tasks/task_repository.dart';
@@ -71,7 +72,6 @@ void main() {
 
   group('Seiten der Tabs', () {
     const pages = <({String location, String titleKey, String hintKey})>[
-      (location: AppRoutes.today, titleKey: 'tabToday', hintKey: 'todayHint'),
       (
         location: AppRoutes.routines,
         titleKey: 'tabRoutines',
@@ -326,9 +326,85 @@ void main() {
       await tester.tap(find.text(marker('taskDoneConfirm')));
       await tester.pumpAndSettle();
 
+      // Zuerst die Feier, mit dem Weg zurück zu „Heute“.
+      expectMarkers([
+        marker('celebrationDone', 'Steuer machen'),
+        marker('celebrationPlus'),
+        marker('celebrationCompanion', marker('companionDefaultName')),
+        marker('celebrationToToday'),
+        marker('celebrationStay'),
+      ]);
+      await tester.tap(find.text(marker('celebrationStay')));
+      await tester.pumpAndSettle();
+
       expectMarkers([
         marker('taskDoneTitle'),
         marker('taskComparison', '30,14'),
+      ]);
+    });
+  });
+
+  group('Heute', () {
+    Future<void> seedTask(AppDatabase db) async {
+      final work = await (db.select(
+        db.areas,
+      )..where((a) => a.builtInKey.equals(BuiltInArea.work))).getSingle();
+      await TaskRepository(db).create(
+        TaskDraft(
+          title: 'Steuer machen',
+          areaId: work.id,
+          steps: [StepDraft('Ordner holen')],
+          estimateMin: 30,
+        ),
+      );
+    }
+
+    void expectMarkers(Iterable<String> texts) {
+      for (final text in texts) {
+        expect(
+          find.text(text),
+          findsOneWidget,
+          reason: 'Text "$text" zeigt seinen Marker nicht',
+        );
+      }
+    }
+
+    testWidgets('ohne Aufgaben trägt „Alles ruhig“ Texte aus den '
+        'Sprachdateien', (tester) async {
+      await pumpApp(tester);
+
+      expectMarkers([
+        marker('todayDeeds', '0'),
+        marker('todayGreeting', marker('companionDefaultName')),
+        marker('todayQuiet'),
+        marker('captureTitle'),
+      ]);
+    });
+
+    testWidgets('Energie-Check, nächster Schritt und Tagesplan tragen Texte '
+        'aus den Sprachdateien', (tester) async {
+      await pumpApp(tester, seed: seedTask);
+
+      expectMarkers([
+        marker('todayEnergyQuestion'),
+        marker('todayEnergyNote'),
+        marker('energyLow'),
+        marker('energyMedium'),
+        marker('energyHigh'),
+      ]);
+
+      await tester.tap(find.text(marker('energyMedium')));
+      await tester.pumpAndSettle();
+
+      expectMarkers([
+        marker('todayNextStep'),
+        marker('todayFirstMiniStep', 'Ordner holen'),
+        '${marker('areaWork')} · ${marker('taskEstimateAbout', '30')}',
+        marker('todayStart'),
+        marker('todayTomorrowAgain'),
+        marker('todayChangeEnergy'),
+        marker('todayPlanTitle'),
+        marker('todayProgress', '0,1'),
       ]);
     });
   });
@@ -340,9 +416,12 @@ void main() {
     await tester.tap(find.byTooltip(marker('captureTooltip')));
     await tester.pumpAndSettle();
 
+    // „Kopf frei machen“ steht auch als Knopf auf „Heute“, deshalb nur im Blatt
+    // suchen.
+    final sheet = find.byType(CaptureSheet);
     for (final key in ['captureTitle', 'captureHint', 'captureFieldHint']) {
       expect(
-        find.text(marker(key)),
+        find.descendant(of: sheet, matching: find.text(marker(key))),
         findsOneWidget,
         reason: 'Text "$key" zeigt seinen Marker nicht',
       );

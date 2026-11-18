@@ -1,31 +1,16 @@
-import 'package:drift/native.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:stups/app.dart';
 import 'package:stups/core/db/app_database.dart';
-import 'package:stups/core/db/app_database_provider.dart';
 import 'package:stups/features/inbox/inbox_repository.dart';
+
+import '../../support/app_harness.dart';
 
 /// Der Ablauf „Kopf frei machen“ an der echten App mit In-Memory-Datenbank.
 void main() {
   late AppDatabase db;
 
-  setUp(() => db = AppDatabase(NativeDatabase.memory()));
-
-  tearDown(() => db.close());
-
   Future<void> pumpApp(WidgetTester tester) async {
-    // Die Texte unten sind deutsch; Tests laufen sonst mit Systemsprache Englisch.
-    tester.platformDispatcher.localesTestValue = const [Locale('de')];
-    addTearDown(tester.platformDispatcher.clearLocalesTestValue);
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [appDatabaseProvider.overrideWithValue(db)],
-        child: const StupsApp(),
-      ),
-    );
-    await tester.pumpAndSettle();
+    db = await pumpStupsApp(tester);
   }
 
   Future<List<String>> savedThoughts(WidgetTester tester) async {

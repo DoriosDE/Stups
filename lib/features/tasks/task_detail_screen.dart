@@ -6,6 +6,7 @@ import '../../core/db/app_database.dart';
 import '../../core/l10n/area_display_name.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/router/app_router.dart';
+import '../today/celebration.dart';
 import 'actual_minutes_sheet.dart';
 import 'task_providers.dart';
 import 'task_repository.dart';
@@ -58,6 +59,8 @@ class _TaskBody extends ConsumerWidget {
     await ref
         .read(taskRepositoryProvider)
         .complete(detail.task.id, actualMin: minutes);
+    if (!context.mounted) return;
+    await celebrate(context, ref, taskTitle: detail.task.title);
   }
 
   @override
