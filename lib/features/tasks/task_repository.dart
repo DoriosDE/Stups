@@ -28,8 +28,9 @@ class TaskDraft {
   final DateTime? dueDate;
   final DateTime? reminderAt;
 
-  /// Ohne Leerraum am Rand; leere Schritte fallen weg. Ein leerer Titel ist
-  /// ein Fehler, denn eine Aufgabe ohne Titel gibt es nicht.
+  /// Ohne Leerraum am Rand; leere Schritte fallen weg; eine Schätzung von 0
+  /// Minuten gilt als keine Schätzung. Ein leerer Titel ist ein Fehler, denn
+  /// eine Aufgabe ohne Titel gibt es nicht.
   TaskDraft _cleaned() {
     final cleanTitle = title.trim();
     if (cleanTitle.isEmpty) {
@@ -46,7 +47,7 @@ class TaskDraft {
         for (final step in steps)
           if (step.trim().isNotEmpty) step.trim(),
       ],
-      estimateMin: estimateMin,
+      estimateMin: estimateMin != null && estimateMin! > 0 ? estimateMin : null,
       priority: priority,
       dueDate: dueDate,
       reminderAt: reminderAt,
@@ -120,23 +121,53 @@ class TaskRepository {
           reminderAt: Value(draft.reminderAt),
         ),
       );
-      await (_db.delete(_db.subtasks)..where((s) => s.taskId.equals(id))).go();
-      await _insertSteps(id, draft.steps);
+      await _syncSteps(id, draft.steps);
     });
+  }
+
+  /// Gleicht die Schritte mit [steps] ab, und zwar nach Position: Die ersten
+  /// behalten ihre Zeile (und damit ihre Haken), neue kommen hinten dazu,
+  /// überzählige fallen weg (samt ihren Haken).
+  Future<void> _syncSteps(String taskId, List<String> steps) async {
+    final existing =
+        await (_db.select(_db.subtasks)
+              ..where((s) => s.taskId.equals(taskId))
+              ..orderBy([(s) => OrderingTerm.asc(s.sortOrder)]))
+            .get();
+    for (final (index, step) in steps.indexed) {
+      if (index < existing.length) {
+        await (_db.update(
+          _db.subtasks,
+        )..where((s) => s.id.equals(existing[index].id))).write(
+          SubtasksCompanion(title: Value(step), sortOrder: Value(index)),
+        );
+      } else {
+        await _insertStep(taskId, index, step);
+      }
+    }
+    for (final surplus in existing.skip(steps.length)) {
+      await (_db.delete(
+        _db.subtasks,
+      )..where((s) => s.id.equals(surplus.id))).go();
+    }
   }
 
   Future<void> _insertSteps(String taskId, List<String> steps) async {
     for (final (index, step) in steps.indexed) {
-      await _db
-          .into(_db.subtasks)
-          .insert(
-            SubtasksCompanion.insert(
-              taskId: taskId,
-              title: step,
-              sortOrder: index,
-            ),
-          );
+      await _insertStep(taskId, index, step);
     }
+  }
+
+  Future<void> _insertStep(String taskId, int index, String title) async {
+    await _db
+        .into(_db.subtasks)
+        .insert(
+          SubtasksCompanion.insert(
+            taskId: taskId,
+            title: title,
+            sortOrder: index,
+          ),
+        );
   }
 
   /// Die sichtbaren Bereiche in der Reihenfolge, in der sie angelegt wurden.

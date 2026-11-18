@@ -84,13 +84,25 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
     if (mounted) context.pop();
   }
 
+  /// Der früheste Tag, den der Dialog anbietet: [earliest], oder der schon
+  /// gewählte Tag, wenn er davor liegt. Sonst bricht der Dialog ab, weil sein
+  /// Startwert vor dem ersten Tag läge.
+  DateTime _firstSelectable(DateTime earliest, DateTime? chosen) {
+    if (chosen == null) return earliest;
+    final day = DateTime(chosen.year, chosen.month, chosen.day);
+    return day.isBefore(earliest) ? day : earliest;
+  }
+
   /// Erst der Tag, dann die Uhrzeit (voreingestellt 9:00).
   Future<void> _pickReminder() async {
     final today = DateTime.now();
     final day = await showDatePicker(
       context: context,
       initialDate: _reminderAt ?? today,
-      firstDate: DateTime(today.year, today.month, today.day),
+      firstDate: _firstSelectable(
+        DateTime(today.year, today.month, today.day),
+        _reminderAt,
+      ),
       lastDate: DateTime(today.year + 5),
     );
     if (day == null || !mounted) return;
@@ -117,7 +129,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
     final picked = await showDatePicker(
       context: context,
       initialDate: _dueDate ?? today,
-      firstDate: DateTime(today.year - 1),
+      firstDate: _firstSelectable(DateTime(today.year - 1), _dueDate),
       lastDate: DateTime(today.year + 5),
     );
     if (picked != null) setState(() => _dueDate = picked);

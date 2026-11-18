@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:stups/core/db/app_database.dart';
+import 'package:stups/features/tasks/task_repository.dart';
 
 import '../../support/app_harness.dart';
 
@@ -11,6 +12,38 @@ void main() {
     await tester.tap(find.widgetWithText(NavigationDestination, 'Aufgaben'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Neue Aufgabe'));
+    await tester.pumpAndSettle();
+    return db;
+  }
+
+  /// Öffnet das Formular zum Bearbeiten einer Aufgabe, die schon vor Jahren
+  /// angelegt wurde, mit den Details aufgeklappt.
+  Future<AppDatabase> openEditFormWithOldDates(WidgetTester tester) async {
+    final db = await pumpStupsApp(
+      tester,
+      seed: (db) async {
+        final personal = await (db.select(
+          db.areas,
+        )..where((a) => a.builtInKey.equals(BuiltInArea.personal))).getSingle();
+        await TaskRepository(db).create(
+          TaskDraft(
+            title: 'Steuer machen',
+            areaId: personal.id,
+            dueDate: DateTime(2020, 1, 1),
+            reminderAt: DateTime(2020, 1, 1, 9),
+          ),
+        );
+      },
+    );
+    await tester.tap(find.widgetWithText(NavigationDestination, 'Aufgaben'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Alle Aufgaben'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Steuer machen'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Bearbeiten'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mehr Details'));
     await tester.pumpAndSettle();
     return db;
   }
@@ -203,6 +236,38 @@ void main() {
       ),
       isTrue,
     );
+  });
+
+  testWidgets('ein altes Fälligkeitsdatum lässt sich im Dialog öffnen und '
+      'bestätigen', (tester) async {
+    final db = await openEditFormWithOldDates(tester);
+
+    await scrollTo(tester, find.text('Fällig am'));
+    await tester.tap(find.text('Fällig am'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    await tapSave(tester);
+
+    expect((await savedTasks(tester, db)).single.dueDate, '2020-01-01');
+  });
+
+  testWidgets('eine vergangene Erinnerung lässt sich im Dialog öffnen und '
+      'bestätigen', (tester) async {
+    final db = await openEditFormWithOldDates(tester);
+
+    await scrollTo(tester, find.text('Erinnerung'));
+    await tester.tap(find.text('Erinnerung'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    // Zeitdialog: die gespeicherte Uhrzeit 9:00 bestätigen.
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    await tapSave(tester);
+
+    final reminder = (await savedTasks(tester, db)).single.reminderAt!;
+    expect(reminder.isAtSameMomentAs(DateTime(2020, 1, 1, 9)), isTrue);
   });
 
   testWidgets('„Neue Aufgabe“ legt eine Aufgabe mit erstem Mini-Schritt an', (

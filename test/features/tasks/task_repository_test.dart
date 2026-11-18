@@ -74,6 +74,26 @@ void main() {
     expect([for (final step in detail.subtasks) step.sortOrder], [0, 1]);
   });
 
+  test('eine Schätzung von 0 Minuten gilt als keine Schätzung', () async {
+    final area = await areaId(BuiltInArea.personal);
+    final id = await tasks.create(
+      TaskDraft(title: 'Bad putzen', areaId: area, estimateMin: 0),
+    );
+    expect((await tasks.watchTask(id).first)!.task.estimateMin, isNull);
+
+    await tasks.update(
+      id,
+      TaskDraft(title: 'Bad putzen', areaId: area, estimateMin: 15),
+    );
+    expect((await tasks.watchTask(id).first)!.task.estimateMin, 15);
+
+    await tasks.update(
+      id,
+      TaskDraft(title: 'Bad putzen', areaId: area, estimateMin: 0),
+    );
+    expect((await tasks.watchTask(id).first)!.task.estimateMin, isNull);
+  });
+
   test('ein leerer Titel wird abgelehnt und legt nichts an', () async {
     final draft = TaskDraft(
       title: '  ',
@@ -125,6 +145,84 @@ void main() {
       expect(await db.select(db.tasks).get(), hasLength(1));
     },
   );
+
+  test('Bearbeiten behält die Schritte samt ihren Haken, wenn nur Texte '
+      'sich ändern', () async {
+    final id = await tasks.create(
+      TaskDraft(
+        title: 'Wäsche waschen',
+        areaId: await areaId(BuiltInArea.household),
+        steps: ['Wäsche sortieren', 'Maschine starten'],
+      ),
+    );
+    await tasks.complete(id, actualMin: 30);
+    final before = (await tasks.watchTask(id).first)!;
+    final occurrence = before.occurrence!;
+    await db
+        .into(db.subtaskChecks)
+        .insert(
+          SubtaskChecksCompanion.insert(
+            occurrenceId: occurrence.id,
+            subtaskId: before.subtasks[1].id,
+            done: true,
+          ),
+        );
+
+    await tasks.update(
+      id,
+      TaskDraft(
+        title: 'Wäsche waschen',
+        areaId: await areaId(BuiltInArea.household),
+        steps: ['Wäsche nach Farbe sortieren', 'Maschine anstellen'],
+      ),
+    );
+
+    final after = (await tasks.watchTask(id).first)!;
+    expect(
+      [for (final s in after.subtasks) s.id],
+      [for (final s in before.subtasks) s.id],
+    );
+    expect(
+      [for (final s in after.subtasks) s.title],
+      ['Wäsche nach Farbe sortieren', 'Maschine anstellen'],
+    );
+    final checks = await db.select(db.subtaskChecks).get();
+    expect(checks.single.subtaskId, before.subtasks[1].id);
+    expect(checks.single.done, isTrue);
+  });
+
+  test('beim Bearbeiten fallen überzählige Schritte weg und neue kommen '
+      'hinten dazu', () async {
+    final area = await areaId(BuiltInArea.household);
+    final id = await tasks.create(
+      TaskDraft(title: 'Wäsche waschen', areaId: area, steps: ['a', 'b', 'c']),
+    );
+    final original = (await tasks.watchTask(id).first)!.subtasks;
+
+    await tasks.update(
+      id,
+      TaskDraft(title: 'Wäsche waschen', areaId: area, steps: ['a', 'b']),
+    );
+    final fewer = (await tasks.watchTask(id).first)!.subtasks;
+    expect([for (final s in fewer) s.title], ['a', 'b']);
+    expect([for (final s in fewer) s.id], [original[0].id, original[1].id]);
+
+    await tasks.update(
+      id,
+      TaskDraft(
+        title: 'Wäsche waschen',
+        areaId: area,
+        steps: ['a', 'b', 'c2', 'd'],
+      ),
+    );
+    final more = (await tasks.watchTask(id).first)!.subtasks;
+    expect([for (final s in more) s.title], ['a', 'b', 'c2', 'd']);
+    expect(
+      [for (final s in more.take(2)) s.id],
+      [original[0].id, original[1].id],
+    );
+    expect([for (final s in more) s.sortOrder], [0, 1, 2, 3]);
+  });
 
   test('die Liste zeigt alle Aufgaben oder nur die eines Bereichs', () async {
     final work = await areaId(BuiltInArea.work);
