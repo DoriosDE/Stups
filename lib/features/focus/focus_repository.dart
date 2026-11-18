@@ -58,6 +58,31 @@ class FocusRepository {
     await (_db.delete(_db.settings)..where((s) => s.key.equals(_key))).go();
   }
 
+  /// Die IDs der Schritte, die im Vorkommen [occurrenceId] abgehakt sind.
+  Stream<Set<String>> watchCheckedSteps(String occurrenceId) {
+    final query = _db.select(_db.subtaskChecks)
+      ..where((c) => c.occurrenceId.equals(occurrenceId) & c.done.equals(true));
+    return query.watch().map((rows) => {for (final row in rows) row.subtaskId});
+  }
+
+  /// Hakt den Schritt [subtaskId] im Vorkommen [occurrenceId] ab oder nimmt den
+  /// Haken zurück. Der Haken gilt nur für dieses Vorkommen, also für diesen Tag.
+  Future<void> setStepChecked(
+    String occurrenceId,
+    String subtaskId, {
+    required bool done,
+  }) async {
+    await _db
+        .into(_db.subtaskChecks)
+        .insertOnConflictUpdate(
+          SubtaskChecksCompanion.insert(
+            occurrenceId: occurrenceId,
+            subtaskId: subtaskId,
+            done: done,
+          ),
+        );
+  }
+
   /// Parkt einen Einfall: Er landet in der Inbox, und als Notiz bleibt
   /// vermerkt, aus welchem Vorkommen er kam.
   Future<void> park(String text, {String? occurrenceId}) async {

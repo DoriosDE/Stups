@@ -106,6 +106,9 @@
   "focusParked": "Parked. It waits in the inbox.",
   "focusSwitchTitle": "A focus is still running for “{task}”.",
   "focusSwitchBody": "Start here instead? “{task}” stays open in your plan.",
+  "focusCurrentStep": "Up now",
+  "focusStepsDoneHeading": "Done so far",
+  "focusAllStepsDone": "All steps done.",
   "focusSwitchConfirm": "Start here",
   "focusSwitchStay": "Stay with “{task}”"
 }

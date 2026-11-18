@@ -552,6 +552,18 @@
       }
     }
   },
+  "focusCurrentStep": "Jetzt dran",
+  "@focusCurrentStep": {
+    "description": "Überschrift über dem Schritt, der im Fokus als Nächstes ansteht, sobald schon ein Schritt abgehakt ist"
+  },
+  "focusStepsDoneHeading": "Geschafft",
+  "@focusStepsDoneHeading": {
+    "description": "Überschrift über den abgehakten Schritten im Fokus"
+  },
+  "focusAllStepsDone": "Alle Schritte geschafft.",
+  "@focusAllStepsDone": {
+    "description": "Sanftes Lob im Fokus, wenn der letzte Schritt abgehakt ist; darunter steht das Angebot „Fertig“"
+  },
   "focusSwitchConfirm": "Hier starten",
   "@focusSwitchConfirm": {
     "description": "Knopf der Rückfrage: den Fokus für die neue Aufgabe starten und den laufenden beenden"

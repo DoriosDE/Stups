@@ -31,7 +31,7 @@ Aufgaben lassen sich anlegen, ansehen und bearbeiten, mit erstem Mini-Schritt.
 - **Alte Daten im Dialog:** Liegt ein gespeichertes Fälligkeitsdatum oder eine Erinnerung in der Vergangenheit, bietet der Datumsdialog diesen Tag mit an, statt abzubrechen.
 - **Erledigt gilt einmalig:** In v0.1 gibt es genau ein Vorkommen je Aufgabe, „erledigt“ heißt: es gibt ein Vorkommen mit Status `done`. Eine Aufgabe lässt sich nicht an einem zweiten Tag erneut erledigen; Wiederholungen kommen mit Routinen (v0.2).
 - **Erinnerung:** Gespeichert wird nur der Zeitpunkt (`reminderAt`); geplant wird er mit Ticket 07.
-- **Bewusst nicht dabei:** Schritte abhaken (kommt mit „Heute“ und dem Fokusmodus, weil dafür ein gestartetes Vorkommen nötig ist), eigene Bereiche anlegen, ausblenden oder umbenennen, Aufgaben löschen oder deaktivieren, Wochenansicht.
+- **Bewusst nicht dabei:** Schritte abhaken (kam mit dem Fokusmodus, Ticket 06, weil dafür ein gestartetes Vorkommen nötig ist), eigene Bereiche anlegen, ausblenden oder umbenennen, Aufgaben löschen oder deaktivieren, Wochenansicht.
 
 ## Umsetzungsstand
 

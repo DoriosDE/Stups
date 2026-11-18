@@ -284,6 +284,82 @@ void main() {
     expect(find.text('Für heute reicht’s'), findsOneWidget);
   });
 
+  group('Schritte abhaken', () {
+    testWidgets('vor dem Start sind die Schritte nur zu sehen', (tester) async {
+      await openFocus(tester);
+
+      expect(find.byType(Checkbox), findsNothing);
+    });
+
+    testWidgets('ein Tipp hakt den Schritt ab, der nächste rückt nach', (
+      tester,
+    ) async {
+      final db = await openFocus(tester);
+      await start(tester, '10 Min.');
+
+      await tester.tap(find.text('Ordner aus dem Regal holen'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Jetzt dran'), findsOneWidget);
+      expect(find.text('Erster Mini-Schritt'), findsNothing);
+      expect(find.text('Geschafft'), findsOneWidget);
+      final checks = (await tester.runAsync(
+        () => db.select(db.subtaskChecks).get(),
+      ))!;
+      expect(checks.map((c) => c.done), [true]);
+      // Der Countdown läuft ungestört.
+      expect(find.text('10:00'), findsOneWidget);
+    });
+
+    testWidgets('ein zweiter Tipp nimmt den Haken zurück', (tester) async {
+      await openFocus(tester);
+      await start(tester, '10 Min.');
+      await tester.tap(find.text('Ordner aus dem Regal holen'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Ordner aus dem Regal holen'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Erster Mini-Schritt'), findsOneWidget);
+      expect(find.text('Geschafft'), findsNothing);
+    });
+
+    testWidgets('der letzte Haken bringt ein sanftes Angebot, kein Muss', (
+      tester,
+    ) async {
+      await openFocus(tester);
+      await start(tester, '10 Min.');
+      expect(find.text('Alle Schritte geschafft.'), findsNothing);
+
+      await tester.tap(find.text('Ordner aus dem Regal holen'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Belege sortieren'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Alle Schritte geschafft.'), findsOneWidget);
+      // Der Countdown läuft weiter, und man kann einfach bleiben.
+      expect(find.text('10:00'), findsOneWidget);
+      await tester.tap(find.widgetWithText(FilledButton, 'Fertig'));
+      await tester.pumpAndSettle();
+      expect(find.widgetWithText(TextField, 'Minuten'), findsOneWidget);
+    });
+
+    testWidgets('die Haken bleiben, wenn man wiederkommt', (tester) async {
+      await openFocus(tester);
+      await start(tester, '10 Min.');
+      await tester.tap(find.text('Ordner aus dem Regal holen'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byTooltip('Zurück'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Los geht’s'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Geschafft'), findsOneWidget);
+      expect(find.text('Jetzt dran'), findsOneWidget);
+    });
+  });
+
   group('zweite Aufgabe', () {
     /// Für „Steuer machen“ läuft der Fokus; dann rückt „Wäsche waschen“ nach,
     /// und man wählt dort eine Dauer. Die Rückfrage steht im Bild.

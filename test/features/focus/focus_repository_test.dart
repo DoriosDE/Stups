@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show OrderingTerm;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stups/core/db/app_database.dart';
@@ -87,6 +88,59 @@ void main() {
     final session = (await focus.watch().first)!;
     expect(session.taskId, other);
     expect(session.remaining(now), const Duration(minutes: 15));
+  });
+
+  group('Haken bei Schritten', () {
+    late String occurrenceId;
+    late List<String> stepIds;
+
+    setUp(() async {
+      final area = (await db.select(db.areas).get()).first;
+      final withSteps = await TaskRepository(db).create(
+        TaskDraft(
+          title: 'Fenster putzen',
+          areaId: area.id,
+          steps: [StepDraft('Eimer holen'), StepDraft('Scheiben wischen')],
+        ),
+      );
+      occurrenceId = (await focus.start(
+        withSteps,
+        const Duration(minutes: 5),
+      )).occurrenceId;
+      stepIds = [
+        for (final step
+            in await (db.select(db.subtasks)
+                  ..where((s) => s.taskId.equals(withSteps))
+                  ..orderBy([(s) => OrderingTerm.asc(s.sortOrder)]))
+                .get())
+          step.id,
+      ];
+    });
+
+    test('ohne Haken ist nichts abgehakt', () async {
+      expect(await focus.watchCheckedSteps(occurrenceId).first, isEmpty);
+    });
+
+    test('ein Haken gilt für diesen Schritt und dieses Vorkommen', () async {
+      await focus.setStepChecked(occurrenceId, stepIds[1], done: true);
+
+      expect(await focus.watchCheckedSteps(occurrenceId).first, {stepIds[1]});
+      expect(await focus.watchCheckedSteps('anderes-vorkommen').first, isEmpty);
+    });
+
+    test('ein Haken lässt sich zurücknehmen', () async {
+      await focus.setStepChecked(occurrenceId, stepIds[0], done: true);
+      await focus.setStepChecked(occurrenceId, stepIds[0], done: false);
+
+      expect(await focus.watchCheckedSteps(occurrenceId).first, isEmpty);
+    });
+
+    test('derselbe Haken zweimal ergibt weiter einen Haken', () async {
+      await focus.setStepChecked(occurrenceId, stepIds[0], done: true);
+      await focus.setStepChecked(occurrenceId, stepIds[0], done: true);
+
+      expect(await focus.watchCheckedSteps(occurrenceId).first, {stepIds[0]});
+    });
   });
 
   group('Ablenkungs-Parkplatz', () {

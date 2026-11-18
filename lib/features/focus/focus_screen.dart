@@ -167,6 +167,15 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
     } else {
       final session = sessionState.value;
       _shownSeconds = session == null ? null : _secondsLeft(session, now);
+      // Haken gibt es erst mit der Sitzung, denn sie gehören zu deren
+      // Vorkommen.
+      final checked = session == null
+          ? const <String>{}
+          : ref.watch(checkedStepsProvider(session.occurrenceId)).value ??
+                const <String>{};
+      final allStepsDone =
+          detail.subtasks.isNotEmpty &&
+          detail.subtasks.every((step) => checked.contains(step.id));
       final list = ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
@@ -188,7 +197,8 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
               onMore: _extend,
               onDone: () => _finish(session, detail),
             ),
-          if (session != null && !session.isOver(now))
+          // Sind alle Schritte geschafft, bietet die Schrittekarte „Fertig“ an.
+          if (session != null && !session.isOver(now) && !allStepsDone)
             Center(
               child: TextButton(
                 onPressed: () => _finish(session, detail),
@@ -196,7 +206,24 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
               ),
             ),
           const SizedBox(height: 12),
-          _Steps(subtasks: detail.subtasks),
+          _Steps(
+            subtasks: detail.subtasks,
+            checked: checked,
+            allDone: allStepsDone,
+            onToggle: session == null
+                ? null
+                : (step, done) => ref
+                      .read(focusRepositoryProvider)
+                      .setStepChecked(
+                        session.occurrenceId,
+                        step.id,
+                        done: done,
+                      ),
+            // Bei Zeitende gibt es „Fertig“ schon am Countdown.
+            onFinish: session == null || session.isOver(now)
+                ? null
+                : () => _finish(session, detail),
+          ),
           // Auch vor dem Start: Einfälle kommen nicht erst mit dem Countdown.
           const SizedBox(height: 16),
           _ParkingLot(occurrenceId: session?.occurrenceId),
@@ -234,54 +261,134 @@ String _formatSeconds(int seconds) {
   return '$minutes:$rest';
 }
 
-/// Die Schritte: der erste hervorgehoben, die übrigen darunter.
+/// Die Schritte: der nächste offene hervorgehoben, die übrigen offenen darunter,
+/// die abgehakten ganz unten.
+///
+/// Ohne [onToggle] (vor dem Start der Sitzung) sind die Schritte nur zu sehen.
+/// Mit [onToggle] lassen sie sich abhaken und wieder freigeben. Sind alle
+/// geschafft ([allDone]), steht statt des nächsten Schritts ein Lob; mit
+/// [onFinish] kommt ein leises Angebot „Fertig“ dazu, kein Muss.
 class _Steps extends StatelessWidget {
-  const _Steps({required this.subtasks});
+  const _Steps({
+    required this.subtasks,
+    required this.checked,
+    required this.allDone,
+    this.onToggle,
+    this.onFinish,
+  });
 
   final List<Subtask> subtasks;
+
+  /// Die IDs der abgehakten Schritte.
+  final Set<String> checked;
+  final bool allDone;
+  final void Function(Subtask step, bool done)? onToggle;
+  final VoidCallback? onFinish;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final first = subtasks.firstOrNull;
-    final later = subtasks.skip(1);
+    final open = [
+      for (final step in subtasks)
+        if (!checked.contains(step.id)) step,
+    ];
+    final done = [
+      for (final step in subtasks)
+        if (checked.contains(step.id)) step,
+    ];
+    final next = open.firstOrNull;
+    final later = open.skip(1);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (first != null)
-          Card(
-            margin: EdgeInsets.zero,
-            color: theme.colorScheme.secondaryContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.taskFirstStepHeading,
-                    style: theme.textTheme.labelLarge,
+        if (allDone)
+          _card(
+            theme,
+            children: [
+              Text(l10n.focusAllStepsDone, style: theme.textTheme.titleMedium),
+              if (onFinish != null) ...[
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton(
+                    onPressed: onFinish,
+                    child: Text(l10n.focusDone),
                   ),
-                  const SizedBox(height: 4),
-                  Text(first.title, style: theme.textTheme.bodyLarge),
-                ],
+                ),
+              ],
+            ],
+          )
+        else if (next != null)
+          _card(
+            theme,
+            children: [
+              Text(
+                done.isEmpty
+                    ? l10n.taskFirstStepHeading
+                    : l10n.focusCurrentStep,
+                style: theme.textTheme.labelLarge,
               ),
-            ),
+              const SizedBox(height: 4),
+              if (onToggle == null)
+                Text(next.title, style: theme.textTheme.bodyLarge)
+              else
+                _stepTile(next, done: false, style: theme.textTheme.bodyLarge),
+            ],
           ),
         if (later.isNotEmpty) ...[
           const SizedBox(height: 12),
           Text(l10n.taskNextSteps, style: theme.textTheme.labelLarge),
           for (final step in later)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              dense: true,
-              leading: const Icon(Icons.radio_button_unchecked),
-              title: Text(step.title),
+            if (onToggle == null)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+                leading: const Icon(Icons.radio_button_unchecked),
+                title: Text(step.title),
+              )
+            else
+              _stepTile(step, done: false),
+        ],
+        if (done.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Text(l10n.focusStepsDoneHeading, style: theme.textTheme.labelLarge),
+          for (final step in done)
+            _stepTile(
+              step,
+              done: true,
+              style: TextStyle(
+                decoration: TextDecoration.lineThrough,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
         ],
       ],
     );
   }
+
+  Widget _card(ThemeData theme, {required List<Widget> children}) => Card(
+    margin: EdgeInsets.zero,
+    color: theme.colorScheme.secondaryContainer,
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      ),
+    ),
+  );
+
+  /// Ein Schritt mit Haken; ein Tipp setzt oder nimmt ihn.
+  Widget _stepTile(Subtask step, {required bool done, TextStyle? style}) =>
+      CheckboxListTile(
+        contentPadding: EdgeInsets.zero,
+        dense: true,
+        controlAffinity: ListTileControlAffinity.leading,
+        value: done,
+        onChanged: (value) => onToggle!(step, value ?? false),
+        title: Text(step.title, style: style),
+      );
 }
 
 /// Die Rückfrage, wenn für eine andere Aufgabe schon ein Fokus läuft. Sie

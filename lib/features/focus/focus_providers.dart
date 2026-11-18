@@ -26,6 +26,12 @@ final runningElsewhereProvider = StreamProvider.family<FocusSession?, String>(
       _watchLiveSession(ref, (session) => session.taskId != taskId),
 );
 
+/// Die IDs der Schritte, die im Vorkommen [occurrenceId] abgehakt sind.
+final checkedStepsProvider = StreamProvider.family<Set<String>, String>(
+  (ref, occurrenceId) =>
+      ref.watch(focusRepositoryProvider).watchCheckedSteps(occurrenceId),
+);
+
 Stream<FocusSession?> _watchLiveSession(
   Ref ref,
   bool Function(FocusSession session) matches,
