@@ -250,6 +250,29 @@ class TaskRepository {
         );
   }
 
+  /// Hält fest, dass die Aufgabe heute begonnen wurde, und liefert die ID des
+  /// Vorkommens von heute. Gibt es heute schon eines (begonnen oder erledigt),
+  /// bleibt es unverändert.
+  Future<String> startToday(String taskId) async {
+    final now = _now();
+    final date = _dayText(now)!;
+    await _db
+        .into(_db.occurrences)
+        .insert(
+          OccurrencesCompanion.insert(
+            taskId: taskId,
+            date: date,
+            status: Value(OccurrenceStatus.started),
+            startedAt: Value(now),
+          ),
+          mode: InsertMode.insertOrIgnore,
+        );
+    final occurrence = await (_db.select(
+      _db.occurrences,
+    )..where((o) => o.taskId.equals(taskId) & o.date.equals(date))).getSingle();
+    return occurrence.id;
+  }
+
   /// Die Taten: so viele erledigte Vorkommen gibt es. Es gibt keine eigene
   /// Tabelle dafür (siehe docs/SPEC.md, Datenmodell). Ein Vorkommen gilt pro
   /// Aufgabe und Tag einmal, wer es zweimal erledigt, hat keine zweite Tat.
@@ -270,9 +293,12 @@ class TaskRepository {
               _db.subtasks,
               _db.subtasks.taskId.equalsExp(_db.tasks.id),
             ),
+            // Nur erledigte Vorkommen: ein begonnenes macht die Aufgabe nicht
+            // zur erledigten.
             leftOuterJoin(
               _db.occurrences,
-              _db.occurrences.taskId.equalsExp(_db.tasks.id),
+              _db.occurrences.taskId.equalsExp(_db.tasks.id) &
+                  _db.occurrences.status.equalsValue(OccurrenceStatus.done),
             ),
           ])
           ..where(_db.tasks.id.equals(id))

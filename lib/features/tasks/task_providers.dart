@@ -2,10 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/db/app_database.dart';
 import '../../core/db/app_database_provider.dart';
+import '../today/today_providers.dart';
 import 'task_repository.dart';
 
 final taskRepositoryProvider = Provider<TaskRepository>(
-  (ref) => TaskRepository(ref.watch(appDatabaseProvider)),
+  (ref) => TaskRepository(
+    ref.watch(appDatabaseProvider),
+    now: ref.watch(clockProvider),
+  ),
 );
 
 /// Die Aufgabenliste; mit einer Bereichs-ID nur dieser Bereich, sonst alle.

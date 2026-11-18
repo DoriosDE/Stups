@@ -3,22 +3,27 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../core/l10n/l10n.dart';
 
-/// Fragt nach dem Erledigen, wie viele Minuten es gedauert hat. Die Schätzung
-/// ist vorbelegt. Liefert die Minuten, oder `null`, wenn das Blatt ohne
-/// Bestätigung geschlossen wird.
-Future<int?> showActualMinutesSheet(BuildContext context, {int? estimate}) {
+/// Fragt nach dem Erledigen, wie viele Minuten es gedauert hat. Vorbelegt ist
+/// die gemessene Zeit [measured] (aus dem Fokusmodus), sonst die Schätzung.
+/// Liefert die Minuten, oder `null`, wenn das Blatt ohne Bestätigung
+/// geschlossen wird.
+Future<int?> showActualMinutesSheet(
+  BuildContext context, {
+  int? estimate,
+  int? measured,
+}) {
   return showModalBottomSheet<int>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (context) => _ActualMinutesSheet(estimate: estimate),
+    builder: (context) => _ActualMinutesSheet(initial: measured ?? estimate),
   );
 }
 
 class _ActualMinutesSheet extends StatefulWidget {
-  const _ActualMinutesSheet({this.estimate});
+  const _ActualMinutesSheet({this.initial});
 
-  final int? estimate;
+  final int? initial;
 
   @override
   State<_ActualMinutesSheet> createState() => _ActualMinutesSheetState();
@@ -26,7 +31,7 @@ class _ActualMinutesSheet extends StatefulWidget {
 
 class _ActualMinutesSheetState extends State<_ActualMinutesSheet> {
   late final _minutes = TextEditingController(
-    text: widget.estimate?.toString() ?? '',
+    text: widget.initial?.toString() ?? '',
   );
 
   @override

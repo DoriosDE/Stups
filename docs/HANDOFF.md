@@ -133,6 +133,13 @@ Alle Oberflächentexte stehen in Sprachdateien (ARB) unter `lib/l10n/`. Deutsch 
 - **Feier:** `celebrate()` in `lib/features/today/celebration.dart` läuft nach dem Erledigen in der Detailansicht. Konfetti und Begleiter-Animation entfallen bei „Animationen reduzieren“ und bei der Systemeinstellung „Bewegung reduzieren“. Das Vibrieren wird nicht abgewartet (im Widget-Test hängt ein `await` auf `HapticFeedback` ohne Plattform-Handler).
 - **Tests:** Wer in einem Widget-Test eine Aufgabe erledigt, sieht danach die Feier und schließt sie mit „Hier bleiben“ oder „Zu Heute“.
 
+## Fokusmodus
+
+- **Sitzung:** `lib/features/focus/focus_session.dart` ist die reine Zeitlogik (Restzeit, Ende, Verlängern, Fortschritt, gebrauchte Minuten), `focus_repository.dart` speichert die eine laufende Sitzung als JSON in `Settings` (Schlüssel `focusSession`) und legt das Vorkommen von heute als `started` an. Beim Backup (Ticket 08) und beim Zurücksetzen ist dieser Schlüssel mitzudenken.
+- **Countdown:** Der Endzeitpunkt ist die Wahrheit. Der Bildschirm zeichnet nur neu, wenn sich die angezeigte Sekunde ändert, und beim Zurückkehren aus dem Hintergrund (`AppLifecycleState.resumed`).
+- **Uhr in Tests:** `clockProvider` lässt sich überschreiben; `pumpStupsApp(..., overrides: [...])` reicht das durch. `taskRepositoryProvider` und `focusRepositoryProvider` nutzen dieselbe Uhr. Beispiel: `test/features/focus/focus_flow_test.dart` (die Uhr springt, dann `pump(Duration(seconds: 1))` für den Tick).
+- **Zurück-Knopf im Test:** `tester.pageBack()` findet ihn nicht; `find.byTooltip('Zurück')` tippen.
+
 ## Designregeln aus den Prototyp-Runden
 
 - Ein Dashboard mit vielen Elementen (Energie-Chips, große Schritt-Karte, Figur, dicke Knöpfe) wirkte unübersichtlich.

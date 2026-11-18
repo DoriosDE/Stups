@@ -489,4 +489,67 @@ void main() {
       expect(await tasks.watchDeedCount().first, 2);
     },
   );
+
+  group('Vorkommen, das gestartet wurde', () {
+    final morning = DateTime(2026, 11, 18, 9, 0);
+
+    test('„gestartet“ ist noch keine erledigte Aufgabe', () async {
+      final repo = TaskRepository(db, now: () => morning);
+      final id = await repo.create(
+        TaskDraft(title: 'Steuer', areaId: await areaId(BuiltInArea.work)),
+      );
+
+      await repo.startToday(id);
+
+      final detail = (await repo.watchTask(id).first)!;
+      expect(detail.occurrence, isNull);
+      final entry = (await repo.watchTasks().first).single;
+      expect(entry.done, isFalse);
+      expect(await repo.watchDeedCount().first, 0);
+    });
+
+    test(
+      'startet man zweimal am selben Tag, bleibt es dasselbe Vorkommen',
+      () async {
+        final repo = TaskRepository(db, now: () => morning);
+        final id = await repo.create(
+          TaskDraft(title: 'Steuer', areaId: await areaId(BuiltInArea.work)),
+        );
+
+        final first = await repo.startToday(id);
+        final second = await repo.startToday(id);
+
+        expect(second, first);
+        final rows = await db.select(db.occurrences).get();
+        expect(rows, hasLength(1));
+        expect(rows.single.status, OccurrenceStatus.started);
+        expect(rows.single.startedAt!.isAtSameMomentAs(morning), isTrue);
+      },
+    );
+
+    test('Erledigen macht aus dem gestarteten Vorkommen ein erledigtes und '
+        'behält den Start', () async {
+      final repo = TaskRepository(
+        db,
+        now: () => morning.add(const Duration(minutes: 12)),
+      );
+      final id = await repo.create(
+        TaskDraft(title: 'Steuer', areaId: await areaId(BuiltInArea.work)),
+      );
+      final occurrenceId = await TaskRepository(
+        db,
+        now: () => morning,
+      ).startToday(id);
+
+      await repo.complete(id, actualMin: 12);
+
+      final rows = await db.select(db.occurrences).get();
+      expect(rows, hasLength(1));
+      expect(rows.single.id, occurrenceId);
+      expect(rows.single.status, OccurrenceStatus.done);
+      expect(rows.single.actualMin, 12);
+      expect(rows.single.startedAt!.isAtSameMomentAs(morning), isTrue);
+      expect(await repo.watchDeedCount().first, 1);
+    });
+  });
 }

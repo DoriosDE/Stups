@@ -303,7 +303,7 @@ class _NextStep extends ConsumerWidget {
               foregroundColor: scheme.onSecondary,
               textStyle: theme.textTheme.titleMedium,
             ),
-            onPressed: () => context.push(AppRoutes.taskPath(task.id)),
+            onPressed: () => context.push(AppRoutes.focusPath(task.id)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

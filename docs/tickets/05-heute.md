@@ -21,7 +21,7 @@
 ## Hinweise
 
 - Der Claim „Rein ins Tun.“ steht im Prototyp unter dem Namen im Kopfbereich. Wird er eingebaut, kommt er aus den Sprachdateien; die englische Fassung wird dann festgelegt (siehe Ticket 16).
-- „Los geht’s“ öffnet vorerst die Detailansicht der Aufgabe; den Fokusmodus gibt es mit Ticket 06.
+- „Los geht’s“ öffnete zunächst die Detailansicht der Aufgabe; seit Ticket 06 öffnet es den Fokusmodus.
 - „Abschaltbar“ heißt: „Animationen reduzieren“ (kein Konfetti, keine Bewegung) und „Vibrieren bei Erfolgen“ in den neuen Einstellungen unter „Mehr“; dazu zeigt die Feier ohne Konfetti, wenn das System „Bewegung reduzieren“ meldet. Der Begleiter hat einen eigenen Schalter und einen Namen.
 - Eine Aufgabe, die man mit „Morgen nochmal?“ aus dem Plan nimmt, kann nach „Energie ändern“ wieder auftauchen; der Plan merkt sich nur die gewählten, nicht die abgelehnten Aufgaben.
 - Der heutige Tag wechselt um Mitternacht von selbst (`todayKeyProvider` mit Timer); der Plan gilt je Kalendertag.

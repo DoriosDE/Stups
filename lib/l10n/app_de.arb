@@ -455,5 +455,81 @@
   "settingsReduceAnimationsHint": "Dann gibt es kein Konfetti und keine Bewegung bei der Feier.",
   "@settingsReduceAnimationsHint": {
     "description": "Erklärung unter dem Schalter „Animationen reduzieren“"
+  },
+  "focusPickTitle": "Wie lange magst du dranbleiben?",
+  "@focusPickTitle": {
+    "description": "Frage über den Dauer-Knöpfen, bevor der Fokus-Countdown startet"
+  },
+  "focusMinutes": "{count} Min.",
+  "@focusMinutes": {
+    "description": "Knopf zur Wahl der Fokus-Dauer, zum Beispiel „10 Min.“",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "focusFree": "Frei",
+  "@focusFree": {
+    "description": "Knopf, mit dem man die Fokus-Dauer selbst eintippt"
+  },
+  "focusFreeTitle": "Wie viele Minuten?",
+  "@focusFreeTitle": {
+    "description": "Überschrift des Dialogs für eine frei gewählte Fokus-Dauer"
+  },
+  "focusFreeConfirm": "Los",
+  "@focusFreeConfirm": {
+    "description": "Bestätigungsknopf im Dialog für eine frei gewählte Fokus-Dauer"
+  },
+  "focusRemaining": "Noch {time}",
+  "@focusRemaining": {
+    "description": "Vorlesetext für den Countdown, zum Beispiel „Noch 4:30“",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "4:30"
+      }
+    }
+  },
+  "focusTimeUp": "Die Zeit ist um.",
+  "@focusTimeUp": {
+    "description": "Hinweis im Fokus, wenn der Countdown bei null ist"
+  },
+  "focusMoreFive": "Noch 5 Minuten",
+  "@focusMoreFive": {
+    "description": "Knopf bei Zeitende: den Fokus um 5 Minuten verlängern"
+  },
+  "focusDone": "Fertig",
+  "@focusDone": {
+    "description": "Knopf bei Zeitende: die Aufgabe ist erledigt"
+  },
+  "focusDoneEarly": "Schon fertig",
+  "@focusDoneEarly": {
+    "description": "Leiser Knopf während des Countdowns: die Aufgabe ist früher erledigt"
+  },
+  "focusStop": "Für heute reicht’s",
+  "@focusStop": {
+    "description": "Ausstieg aus dem Fokus, jederzeit und ohne Vorwurf"
+  },
+  "focusStopped": "Du hast angefangen. Das zählt.",
+  "@focusStopped": {
+    "description": "Kurze Meldung nach „Für heute reicht’s“, ermutigend und ohne Vorwurf"
+  },
+  "focusParkTitle": "Plötzlicher Einfall?",
+  "@focusParkTitle": {
+    "description": "Überschrift des Ablenkungs-Parkplatzes im Fokus"
+  },
+  "focusParkHint": "Park ihn hier, er wartet in der Inbox.",
+  "@focusParkHint": {
+    "description": "Erklärung unter der Überschrift des Ablenkungs-Parkplatzes"
+  },
+  "focusParkButton": "Parken",
+  "@focusParkButton": {
+    "description": "Knopf, der einen Einfall in die Inbox parkt"
+  },
+  "focusParked": "Geparkt. Er wartet in der Inbox.",
+  "@focusParked": {
+    "description": "Meldung, nachdem ein Einfall geparkt wurde"
   }
 }

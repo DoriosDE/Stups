@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../features/focus/focus_screen.dart';
 import '../../features/routines/routines_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/household/household_screen.dart';
@@ -22,12 +23,16 @@ abstract final class AppRoutes {
   static const newTask = '/aufgaben/neu';
   static const task = '/aufgaben/:id';
   static const editTask = '/aufgaben/:id/bearbeiten';
+  static const focus = '/fokus/:id';
 
   /// Der Pfad zur Detailansicht der Aufgabe [id].
   static String taskPath(String id) => '/aufgaben/$id';
 
   /// Der Pfad zum Bearbeiten der Aufgabe [id].
   static String editTaskPath(String id) => '/aufgaben/$id/bearbeiten';
+
+  /// Der Pfad zum Fokusmodus für die Aufgabe [id].
+  static String focusPath(String id) => '/fokus/$id';
 }
 
 GoRouter createRouter({String initialLocation = AppRoutes.today}) {
@@ -59,6 +64,11 @@ GoRouter createRouter({String initialLocation = AppRoutes.today}) {
         path: AppRoutes.task,
         builder: (context, state) =>
             TaskDetailScreen(taskId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: AppRoutes.focus,
+        builder: (context, state) =>
+            FocusScreen(taskId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: AppRoutes.editTask,
